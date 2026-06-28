@@ -55,15 +55,65 @@
   });
 })();
 
-/* ── PARALLAX HERO ── */
+/* ── WORD-BY-WORD HERO FADE ── */
+(function () {
+  const words = document.querySelectorAll('.wf-word');
+  if (!words.length) return;
+
+  // Light up words one by one on page load with staggered delay
+  words.forEach((word, i) => {
+    setTimeout(() => word.classList.add('lit'), 300 + i * 180);
+  });
+})();
+
+/* ── HERO IMAGE ZOOM ON SCROLL ── */
 (function () {
   const img = document.getElementById('heroImg');
-  if (!img || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const hero = document.querySelector('.hero');
+  if (!img || !hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   window.addEventListener('scroll', () => {
-    const y = window.scrollY;
-    img.style.transform = `translateY(${y * 0.35}px)`;
+    const scrolled = window.scrollY;
+    const heroH = hero.offsetHeight;
+    const progress = Math.min(scrolled / heroH, 1);
+    // Zoom from 1 → 1.18 as you scroll out of hero
+    const scale = 1 + progress * 0.18;
+    // Parallax shift upward
+    const translateY = scrolled * 0.35;
+    img.style.transform = `translateY(${translateY}px) scale(${scale})`;
   }, { passive: true });
 })();
+
+/* ── STICKY SCROLL SECTION ── */
+(function () {
+  const steps = document.querySelectorAll('.sticky-step');
+  const imgs = document.querySelectorAll('.sticky-img');
+  if (!steps.length || !imgs.length) return;
+
+  let currentStep = 0;
+
+  function setStep(n) {
+    if (n === currentStep) return;
+    currentStep = n;
+    steps.forEach((s, i) => s.classList.toggle('active', i === n));
+    imgs.forEach((img, i) => img.classList.toggle('active', i === n));
+  }
+
+  // Activate first step immediately
+  steps[0].classList.add('active');
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const n = parseInt(entry.target.dataset.step);
+        setStep(n);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  steps.forEach(step => obs.observe(step));
+})();
+
+
 
 /* ── MAGNETIC BUTTONS ── */
 (function () {
