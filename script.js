@@ -1,0 +1,288 @@
+// ================================
+// SB CONSTRUCTION – PREMIUM SCRIPTS
+// ================================
+
+/* ── THEME TOGGLE ── */
+(function () {
+  const toggle = document.querySelector('[data-theme-toggle]');
+  const root = document.documentElement;
+  let theme = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light';
+  root.setAttribute('data-theme', theme);
+  function updateIcon() {
+    if (!toggle) return;
+    toggle.innerHTML = theme === 'dark'
+      ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  updateIcon();
+  toggle && toggle.addEventListener('click', () => {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', theme);
+    updateIcon();
+  });
+})();
+
+/* ── STICKY HEADER ── */
+(function () {
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 10), { passive: true });
+})();
+
+/* ── MOBILE NAV ── */
+(function () {
+  const toggle = document.getElementById('nav-toggle');
+  const nav = document.getElementById('mobile-nav');
+  let open = false;
+  toggle && toggle.addEventListener('click', () => {
+    open = !open;
+    nav.classList.toggle('open', open);
+    nav.setAttribute('aria-hidden', String(!open));
+    const spans = toggle.querySelectorAll('span');
+    if (open) {
+      spans[0].style.transform = 'rotate(45deg) translate(5px,5px)';
+      spans[1].style.opacity = '0';
+      spans[2].style.transform = 'rotate(-45deg) translate(5px,-5px)';
+    } else {
+      spans[0].style.transform = ''; spans[1].style.opacity = ''; spans[2].style.transform = '';
+    }
+  });
+  nav && nav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      open = false; nav.classList.remove('open'); nav.setAttribute('aria-hidden','true');
+      const spans = toggle.querySelectorAll('span');
+      spans[0].style.transform=''; spans[1].style.opacity=''; spans[2].style.transform='';
+    });
+  });
+})();
+
+/* ── PARALLAX HERO ── */
+(function () {
+  const img = document.getElementById('heroImg');
+  if (!img || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    img.style.transform = `translateY(${y * 0.35}px)`;
+  }, { passive: true });
+})();
+
+/* ── MAGNETIC BUTTONS ── */
+(function () {
+  const btns = document.querySelectorAll('.magnetic-btn');
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  btns.forEach(btn => {
+    btn.addEventListener('mousemove', e => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+      btn.style.transform = `translate(${x * 0.22}px, ${y * 0.22}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+})();
+
+/* ── SCROLL REVEAL ── */
+(function () {
+  const els = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  els.forEach(el => obs.observe(el));
+})();
+
+/* ── COUNTER ANIMATION ── */
+(function () {
+  const counters = document.querySelectorAll('.counter');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.target, 10);
+      const suffix = el.dataset.suffix || '';
+      const duration = 1800;
+      const startTime = performance.now();
+      function tick(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target) + suffix;
+        if (progress < 1) requestAnimationFrame(tick);
+        else el.textContent = target + suffix;
+      }
+      requestAnimationFrame(tick);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => obs.observe(c));
+})();
+
+/* ── BEFORE / AFTER SLIDER ── */
+(function () {
+  const slider = document.getElementById('baSlider');
+  const handle = document.getElementById('baHandle');
+  const before = slider && slider.querySelector('.ba-before');
+  if (!slider || !handle || !before) return;
+
+  let isDragging = false;
+  let pct = 50;
+
+  function setPos(x) {
+    const rect = slider.getBoundingClientRect();
+    pct = Math.max(5, Math.min(95, ((x - rect.left) / rect.width) * 100));
+    before.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+    handle.style.left = pct + '%';
+  }
+
+  handle.addEventListener('mousedown', e => { isDragging = true; e.preventDefault(); });
+  handle.addEventListener('touchstart', e => { isDragging = true; }, { passive: true });
+  window.addEventListener('mousemove', e => { if (isDragging) setPos(e.clientX); });
+  window.addEventListener('touchmove', e => { if (isDragging) setPos(e.touches[0].clientX); }, { passive: true });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+  window.addEventListener('touchend', () => { isDragging = false; });
+  slider.addEventListener('click', e => setPos(e.clientX));
+
+  // Keyboard accessibility
+  handle.setAttribute('tabindex', '0');
+  handle.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { pct = Math.max(5, pct - 5); before.style.clipPath = `inset(0 ${100-pct}% 0 0)`; handle.style.left = pct + '%'; }
+    if (e.key === 'ArrowRight') { pct = Math.min(95, pct + 5); before.style.clipPath = `inset(0 ${100-pct}% 0 0)`; handle.style.left = pct + '%'; }
+  });
+})();
+
+/* ── HORIZONTAL GALLERY (DRAG) ── */
+(function () {
+  const wrap = document.getElementById('galleryWrap');
+  const track = document.getElementById('galleryTrack');
+  if (!wrap || !track) return;
+
+  let isDown = false;
+  let startX, scrollLeft;
+
+  wrap.addEventListener('mousedown', e => {
+    isDown = true; wrap.style.cursor = 'grabbing';
+    startX = e.pageX - wrap.offsetLeft;
+    scrollLeft = wrap.scrollLeft;
+    e.preventDefault();
+  });
+  wrap.addEventListener('mouseleave', () => { isDown = false; wrap.style.cursor = 'grab'; });
+  wrap.addEventListener('mouseup', () => { isDown = false; wrap.style.cursor = 'grab'; });
+  wrap.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    const x = e.pageX - wrap.offsetLeft;
+    const dist = (x - startX) * 1.2;
+    wrap.scrollLeft = scrollLeft - dist;
+  });
+
+  // Touch
+  let touchStartX = 0, touchScrollLeft = 0;
+  wrap.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].pageX;
+    touchScrollLeft = wrap.scrollLeft;
+  }, { passive: true });
+  wrap.addEventListener('touchmove', e => {
+    const x = e.touches[0].pageX;
+    wrap.scrollLeft = touchScrollLeft - (x - touchStartX);
+  }, { passive: true });
+
+  // Make wrap scrollable
+  wrap.style.overflowX = 'auto';
+  wrap.style.scrollbarWidth = 'none';
+  wrap.style.webkitOverflowScrolling = 'touch';
+  const style = document.createElement('style');
+  style.textContent = '#galleryWrap::-webkit-scrollbar{display:none}';
+  document.head.appendChild(style);
+})();
+
+/* ── TESTIMONIALS CAROUSEL ── */
+(function () {
+  const track = document.getElementById('testimonialsTrack');
+  const dotsContainer = document.getElementById('carouselDots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  if (!track || !dotsContainer) return;
+
+  const cards = track.querySelectorAll('.testimonial-card');
+  let current = 0;
+
+  function getVisible() {
+    if (window.innerWidth < 600) return 1;
+    if (window.innerWidth < 900) return 2;
+    return 3;
+  }
+
+  function totalSlides() { return Math.ceil(cards.length / getVisible()); }
+
+  function buildDots() {
+    dotsContainer.innerHTML = '';
+    for (let i = 0; i < totalSlides(); i++) {
+      const d = document.createElement('div');
+      d.className = 'carousel-dot' + (i === current ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(d);
+    }
+  }
+
+  function goTo(n) {
+    current = Math.max(0, Math.min(n, totalSlides() - 1));
+    const cardW = cards[0].offsetWidth + 24; // gap is 24px (--space-6)
+    track.style.transform = `translateX(-${current * getVisible() * cardW}px)`;
+    dotsContainer.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+
+  prevBtn && prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn && nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Auto-advance
+  let autoInterval = setInterval(() => goTo((current + 1) % totalSlides()), 5000);
+  track.addEventListener('mouseenter', () => clearInterval(autoInterval));
+  track.addEventListener('mouseleave', () => { autoInterval = setInterval(() => goTo((current + 1) % totalSlides()), 5000); });
+
+  buildDots();
+  window.addEventListener('resize', () => { current = 0; buildDots(); goTo(0); });
+})();
+
+/* ── SMOOTH SCROLL ── */
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+
+/* ── TEL / MAILTO PROTECTION ── */
+document.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(link => {
+  link.addEventListener('click', e => e.stopPropagation());
+});
+
+/* ── CONTACT FORM ── */
+(function () {
+  const form = document.getElementById('contact-form');
+  if (!form) return;
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Opening email…';
+    const name    = form.querySelector('#name').value.trim();
+    const phone   = form.querySelector('#phone').value.trim();
+    const email   = form.querySelector('#email').value.trim();
+    const service = form.querySelector('#service').value;
+    const message = form.querySelector('#message').value.trim();
+    const subject = encodeURIComponent('Quote Request – ' + (service || 'General Enquiry') + ' | SB Construction');
+    const body = encodeURIComponent(
+      'Hi Sandhu Brothers,\n\nI would like to request a quote for the following:\n\n' +
+      'Name: ' + name + '\nPhone: ' + phone + (email ? '\nEmail: ' + email : '') +
+      '\nService: ' + (service || 'Not specified') +
+      '\n\nProject Details:\n' + (message || 'No additional details provided.') +
+      '\n\nKind regards,\n' + name
+    );
+    window.open('mailto:sbconstruction0001@gmail.com?subject=' + subject + '&body=' + body, '_self');
+    setTimeout(() => {
+      form.innerHTML = `
+        <div class="form-success">
+          <div class="form-success-icon">✅</div>
+          <h3>Thanks, ${name || 'there'}!</h3>
+          <p>Your email client has opened with your quote pre-filled. Just hit send!</p>
+          <p style="margin-top:12px;font-size:var(--text-xs);color:var(--color-text-faint);">Or call us on <a href="tel:0497579997" style="color:var(--color-primary);font-weight:700;">0497 579 997</a></p>
+        </div>`;
+    }, 800);
+  });
+})();
