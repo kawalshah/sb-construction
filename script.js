@@ -55,17 +55,6 @@
   });
 })();
 
-/* ── WORD-BY-WORD HERO FADE ── */
-(function () {
-  const words = document.querySelectorAll('.wf-word');
-  if (!words.length) return;
-
-  // Light up words one by one on page load with staggered delay
-  words.forEach((word, i) => {
-    setTimeout(() => word.classList.add('lit'), 300 + i * 180);
-  });
-})();
-
 /* ── HERO IMAGE ZOOM ON SCROLL ── */
 (function () {
   const img = document.getElementById('heroImg');
