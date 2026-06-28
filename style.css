@@ -136,25 +136,7 @@ p,li{text-wrap:pretty;max-width:68ch;}
 .btn-full { width:100%; }
 .magnetic-btn { will-change: transform; }
 
-/* ======================== WORD FADE ======================== */
-.wf-line {
-  display: block;
-}
-.wf-word {
-  display: inline-block;
-  opacity: 0;
-  filter: blur(8px);
-  transform: translateY(12px);
-  animation: wordReveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(0.3s + var(--wi, 0) * 0.18s);
-}
-@keyframes wordReveal {
-  0%   { opacity: 0; filter: blur(8px); transform: translateY(12px); }
-  100% { opacity: 1; filter: blur(0);   transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .wf-word { animation: none; opacity: 1; filter: none; transform: none; }
-}
+
 
 /* ======================== STICKY SCROLL SECTION ======================== */
 .sticky-scroll-section {
