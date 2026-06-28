@@ -272,13 +272,30 @@ p,li{text-wrap:pretty;max-width:68ch;}
 .category-icon { width:44px; height:44px; background:rgba(232,93,4,0.15); border:1px solid rgba(232,93,4,0.3); border-radius:var(--radius-md); display:flex; align-items:center; justify-content:center; color:var(--color-primary); flex-shrink:0; }
 .category-header h3 { font-family:var(--font-display); font-size:var(--text-xl); font-weight:700; color:white; letter-spacing:-0.02em; }
 .service-cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:var(--space-5); }
-.service-card { background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-lg); padding:var(--space-6); transition:transform var(--transition),box-shadow var(--transition),border-color var(--transition); position:relative; overflow:hidden; }
-.service-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(232,93,4,0.04),transparent); opacity:0; transition:opacity var(--transition); }
-.service-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-md); border-color:var(--color-primary); }
+.service-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background var(--transition);
+  position: relative; overflow: hidden;
+}
+.service-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(232,93,4,0.10) 0%, transparent 60%);
+  opacity: 0; transition: opacity var(--transition);
+}
+.service-card::after {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(232,93,4,0.6), transparent);
+  opacity: 0; transition: opacity var(--transition);
+}
+.service-card:hover { transform:translateY(-8px); box-shadow:0 24px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(232,93,4,0.25); border-color:rgba(232,93,4,0.3); background:rgba(255,255,255,0.07); }
 .service-card:hover::before { opacity:1; }
+.service-card:hover::after { opacity:1; }
 .card-icon { font-size:2rem; margin-bottom:var(--space-4); display:block; }
 .service-card h4 { font-family:var(--font-display); font-size:var(--text-base); font-weight:700; color:white; margin-bottom:var(--space-2); letter-spacing:-0.01em; }
-.service-card p { font-size:var(--text-sm); color:rgba(255,255,255,0.4); line-height:1.65; max-width:100%; }
+.service-card p { font-size:var(--text-sm); color:rgba(255,255,255,0.5); line-height:1.65; max-width:100%; }
 
 /* ======================== BEFORE / AFTER ======================== */
 .before-after-section { padding:clamp(var(--space-16),8vw,var(--space-24)) 0; background:var(--color-surface); }
