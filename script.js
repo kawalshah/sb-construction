@@ -2,7 +2,7 @@
 
 /* ══════════════════════════════════════════════════
    CINEMATIC INTRO — BUILDING CONSTRUCTION ANIMATION
-   Max duration: 1.5s hard timeout. Always shows site.
+   6 phases × 650ms = ~4s cinematic build. Hard timeout: 5.5s.
 ══════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -50,8 +50,8 @@
 
   var W, H;
   function resize() {
-    W = canvas.width  = (loader.offsetWidth  || window.innerWidth  || 800);
-    H = canvas.height = (loader.offsetHeight || window.innerHeight || 600);
+    W = canvas.width  = window.innerWidth  || loader.offsetWidth  || 800;
+    H = canvas.height = window.innerHeight || loader.offsetHeight || 600;
   }
   resize();
   window.addEventListener('resize', resize, { passive: true });
