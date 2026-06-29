@@ -82,23 +82,22 @@
 </head>
 <body>
 
-  <!-- CINEMATIC INTRO LOADER -->
+  <!-- CINEMATIC INTRO: BUILDING CONSTRUCTION ANIMATION -->
   <div id="intro-loader" aria-hidden="true">
     <canvas id="intro-canvas"></canvas>
-    <div class="intro-logo">
-      <svg id="intro-sb" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect id="intro-sb-rect" width="80" height="80" rx="12" fill="#E85D04"/>
+    <!-- Phase label at bottom -->
+    <div class="intro-phase-label">Laying Foundation…</div>
+    <!-- Progress bar -->
+    <div class="intro-progress-bar"></div>
+    <!-- Logo shown at very end before curtain rip -->
+    <div class="intro-final-logo">
+      <svg width="56" height="56" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="80" height="80" rx="12" fill="#E85D04"/>
         <text x="12" y="56" font-family="sans-serif" font-weight="900" font-size="38" fill="white">SB</text>
       </svg>
-      <div class="intro-name">SB Construction</div>
-      <div class="intro-sub">Sandhu Brothers &mdash; Perth, WA</div>
+      <div class="intro-final-logo-name">SB Construction</div>
     </div>
-    <div class="intro-glow" id="introGlow"></div>
-    <div class="intro-lines">
-      <div class="intro-line intro-line-1"></div>
-      <div class="intro-line intro-line-2"></div>
-      <div class="intro-line intro-line-3"></div>
-    </div>
+    <!-- Curtains for dramatic reveal -->
     <div class="intro-curtain-top" id="introCurtainTop"></div>
     <div class="intro-curtain-bot" id="introCurtainBot"></div>
   </div>
@@ -135,7 +134,7 @@
   </header>
 
   <!-- ═══════════════════════════════════════
-       HERO — EDITORIAL FULL-BLEED
+       HERO — CINEMATIC FULL-BLEED (VELAARMON STYLE)
        ═══════════════════════════════════════ -->
   <section class="hero" id="home">
     <canvas class="hero-particles" id="heroParticles"></canvas>
@@ -152,69 +151,58 @@
       <div class="hero-grain"></div>
     </div>
 
-    <!-- Giant background display text (Obsidian Assembly style) -->
-    <div class="hero-bg-word" aria-hidden="true">BUILT</div>
-
-    <!-- Floating image card (like the 3D object in the reference) -->
-    <div class="hero-float-card" id="heroFloatCard" aria-hidden="true">
-      <picture>
-        <source srcset="svc_banner_building.webp" type="image/webp" />
-        <img src="svc_banner_building.png" alt="" loading="lazy" decoding="async" />
-      </picture>
-      <div class="hero-float-card-label">
-        <span class="hfc-tag">Perth, WA</span>
-        <span class="hfc-title">Est. 2019</span>
-      </div>
+    <!-- VELAARMON-style: massive brand name overlaid across the full-bleed photo -->
+    <div class="hero-brand-overlay" aria-label="SB Construction" id="heroBrandOverlay">
+      <span class="hbo-line hbo-line-1 hero-anim-item" data-anim-delay="100">SB</span>
+      <span class="hbo-line hbo-line-2 hero-anim-item" data-anim-delay="180">CON</span>
+      <span class="hbo-line hbo-line-3 hero-anim-item" data-anim-delay="260">STRUC</span>
+      <span class="hbo-line hbo-line-4 hero-anim-item" data-anim-delay="340">TION</span>
     </div>
 
-    <!-- Hero content anchored bottom-left -->
-    <div class="hero-content">
-      <div class="hero-eyebrow hero-anim-item" data-anim-delay="0">
-        <div class="hero-eyebrow-line"></div>
-        <span class="hero-eyebrow-text">Sandhu Brothers — Perth, WA</span>
-      </div>
+    <!-- Top-right descriptor badge -->
+    <div class="hero-descriptor hero-anim-item" data-anim-delay="500" id="heroDescriptor">
+      <div class="hero-desc-tag">Perth, WA</div>
+      <div class="hero-desc-line"></div>
+      <div class="hero-desc-text">Sandhu Brothers</div>
+    </div>
 
-      <h1 class="hero-heading">
-        <span class="hero-line-wrap"><span class="hero-line hero-anim-item" data-anim-delay="80">Built</span></span>
-        <span class="hero-line-wrap"><span class="hero-line hero-anim-item" data-anim-delay="180">Right.</span></span>
-        <span class="hero-line-wrap"><span class="hero-line hero-accent hero-anim-item" data-anim-delay="300">Every</span></span>
-        <span class="hero-line-wrap"><span class="hero-line hero-accent hero-anim-item" data-anim-delay="400">Time.</span></span>
-      </h1>
-
-      <p class="hero-sub hero-anim-item" data-anim-delay="520">From landscaping to full renovations — residential &amp; commercial services across Perth.</p>
-
-      <div class="hero-actions hero-anim-item" data-anim-delay="640">
-        <a href="#contact" class="btn btn-primary magnetic-btn">Get a Free Quote</a>
-        <a href="#services" class="btn btn-ghost">View Services</a>
-      </div>
-
-      <!-- Stats row -->
-      <div class="hero-bottom hero-anim-item" data-anim-delay="780">
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="stat-num counter" data-target="250" data-suffix="+">0</span>
-            <span class="stat-label">Projects Done</span>
+    <!-- Bottom HUD: stats + CTA anchored bottom -->
+    <div class="hero-hud" id="heroHud">
+      <div class="hero-hud-left hero-anim-item" data-anim-delay="420">
+        <div class="hud-eyebrow">
+          <span class="hud-dot"></span>
+          <span>Building &bull; Landscaping &bull; Painting</span>
+        </div>
+        <div class="hud-stats">
+          <div class="hud-stat">
+            <span class="hud-stat-num counter" data-target="250" data-suffix="+">0</span>
+            <span class="hud-stat-label">Projects</span>
           </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <span class="stat-num counter" data-target="20" data-suffix="+">0</span>
-            <span class="stat-label">Services</span>
+          <div class="hud-stat-sep"></div>
+          <div class="hud-stat">
+            <span class="hud-stat-num counter" data-target="20" data-suffix="+">0</span>
+            <span class="hud-stat-label">Services</span>
           </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <span class="stat-num counter" data-target="5" data-suffix="★">0</span>
-            <span class="stat-label">Star Rated</span>
+          <div class="hud-stat-sep"></div>
+          <div class="hud-stat">
+            <span class="hud-stat-num">5★</span>
+            <span class="hud-stat-label">Rated</span>
           </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <span class="stat-num">100%</span>
-            <span class="stat-label">Guaranteed</span>
+          <div class="hud-stat-sep"></div>
+          <div class="hud-stat">
+            <span class="hud-stat-num">100%</span>
+            <span class="hud-stat-label">Guaranteed</span>
           </div>
         </div>
-        <div class="scroll-indicator">
-          <span>Scroll</span>
-          <div class="scroll-line"></div>
-        </div>
+      </div>
+      <div class="hero-hud-right hero-anim-item" data-anim-delay="540">
+        <a href="#contact" class="btn btn-primary magnetic-btn hud-cta">Get a Free Quote</a>
+        <a href="#services" class="hud-explore">
+          <div class="scroll-indicator">
+            <div class="scroll-line"></div>
+          </div>
+          <span>Explore</span>
+        </a>
       </div>
     </div>
   </section>
@@ -254,6 +242,43 @@
   </div>
 
   <!-- ═══════════════════════════════════════
+
+  <!-- ═══════════════════════════════════════
+       CINEMATIC FULL-BLEED PANELS (Feadship style)
+       ═══════════════════════════════════════ -->
+  <section class="cinema-panels" id="cinemasection">
+    <!-- Panel 1: Building -->
+    <div class="cinema-panel" data-panel="1">
+      <div class="cinema-panel-img" style="background-image:url('svc_banner_building.png')"></div>
+      <div class="cinema-panel-overlay"></div>
+      <div class="cinema-panel-content">
+        <div class="cp-tag">01 / Building &amp; Renovation</div>
+        <h2 class="cp-heading">Structure.<br>Strength.<br>Finish.</h2>
+        <a href="#services" class="cp-link">View Services <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </div>
+    <!-- Panel 2: Landscaping -->
+    <div class="cinema-panel" data-panel="2">
+      <div class="cinema-panel-img" style="background-image:url('svc_banner_landscaping.png')"></div>
+      <div class="cinema-panel-overlay"></div>
+      <div class="cinema-panel-content">
+        <div class="cp-tag">02 / Landscaping &amp; Garden</div>
+        <h2 class="cp-heading">Outdoors<br>Reimagined.</h2>
+        <a href="#services" class="cp-link">View Services <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </div>
+    <!-- Panel 3: Painting -->
+    <div class="cinema-panel" data-panel="3">
+      <div class="cinema-panel-img" style="background-image:url('svc_banner_painting.png')"></div>
+      <div class="cinema-panel-overlay"></div>
+      <div class="cinema-panel-content">
+        <div class="cp-tag">03 / Painting Services</div>
+        <h2 class="cp-heading">Colour<br>That<br>Transforms.</h2>
+        <a href="#services" class="cp-link">View Services <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </div>
+  </section>
+
        APPLE-STYLE STICKY SCROLL
        ═══════════════════════════════════════ -->
   <section class="sticky-scroll-section" id="stickyScroll">
