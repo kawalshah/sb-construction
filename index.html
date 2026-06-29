@@ -15,6 +15,27 @@
 </head>
 <body>
 
+  <!-- CINEMATIC INTRO LOADER -->
+  <div id="intro-loader" aria-hidden="true">
+    <canvas id="intro-canvas"></canvas>
+    <div class="intro-logo">
+      <svg id="intro-sb" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect id="intro-sb-rect" width="80" height="80" rx="12" fill="#E85D04"/>
+        <text x="12" y="56" font-family="sans-serif" font-weight="900" font-size="38" fill="white">SB</text>
+      </svg>
+      <div class="intro-name">SB Construction</div>
+      <div class="intro-sub">Sandhu Brothers &mdash; Perth, WA</div>
+    </div>
+    <div class="intro-glow" id="introGlow"></div>
+    <div class="intro-lines">
+      <div class="intro-line intro-line-1"></div>
+      <div class="intro-line intro-line-2"></div>
+      <div class="intro-line intro-line-3"></div>
+    </div>
+    <div class="intro-curtain-top" id="introCurtainTop"></div>
+    <div class="intro-curtain-bot" id="introCurtainBot"></div>
+  </div>
+
   <!-- NAV -->
   <header class="site-header" id="site-header">
     <div class="nav-inner">
@@ -48,26 +69,41 @@
 
   <!-- HERO -->
   <section class="hero" id="home">
+    <canvas class="hero-particles" id="heroParticles"></canvas>
     <div class="hero-media" id="heroParallax">
       <img src="sb_hero.png" alt="Sandhu Brothers at a construction site at sunset" class="hero-img" id="heroImg" />
       <div class="hero-overlay"></div>
       <div class="hero-grain"></div>
     </div>
+    <!-- Diagonal accent lines -->
+    <div class="hero-diagonals" aria-hidden="true">
+      <div class="hero-diag hero-diag-1"></div>
+      <div class="hero-diag hero-diag-2"></div>
+    </div>
+    <!-- Floating hardhat icon -->
+    <div class="hero-float-icon" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 38h48v6a4 4 0 01-4 4H12a4 4 0 01-4-4v-6z" stroke="#E85D04" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M32 10v20M20 38v-8c0-6.627 5.373-12 12-12s12 5.373 12 12v8" stroke="#E85D04" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 38v-6c0-11.046 8.954-20 20-20s20 8.954 20 20v6" stroke="rgba(232,93,4,0.35)" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
     <div class="hero-content">
-      <div class="hero-eyebrow reveal-up">
+      <div class="hero-eyebrow hero-anim-item" data-anim-delay="0">
         <div class="hero-eyebrow-line"></div>
         <span class="hero-eyebrow-text">Sandhu Brothers — Perth, WA</span>
       </div>
-      <h1 class="hero-heading reveal-up" style="--delay:0.1s">
-        Built Right.<br><span class="hero-accent">Every Time.</span>
+      <h1 class="hero-heading">
+        <span class="hero-line-wrap"><span class="hero-line hero-anim-item" data-anim-delay="120">Built Right.</span></span>
+        <span class="hero-line-wrap"><span class="hero-line hero-accent hero-anim-item" data-anim-delay="240">Every Time.</span></span>
       </h1>
-      <p class="hero-sub reveal-up" style="--delay:0.2s">From landscaping to full renovations — residential &amp; commercial services across Perth.</p>
-      <div class="hero-actions reveal-up" style="--delay:0.3s">
+      <p class="hero-sub hero-anim-item" data-anim-delay="380">From landscaping to full renovations — residential &amp; commercial services across Perth.</p>
+      <div class="hero-actions hero-anim-item" data-anim-delay="500">
         <a href="#contact" class="btn btn-primary magnetic-btn">Get a Free Quote</a>
         <a href="#services" class="btn btn-ghost">Our Services</a>
       </div>
       <!-- Stats + Scroll at bottom -->
-      <div class="hero-bottom reveal-up" style="--delay:0.4s">
+      <div class="hero-bottom hero-anim-item" data-anim-delay="640">
         <div class="hero-stats">
           <div class="stat">
             <span class="stat-num counter" data-target="250" data-suffix="+">0</span>

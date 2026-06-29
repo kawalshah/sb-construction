@@ -2,6 +2,164 @@
 // SB CONSTRUCTION – PREMIUM SCRIPTS
 // ================================
 
+/* ── CINEMATIC INTRO LOADER ── */
+(function () {
+  const loader = document.getElementById('intro-loader');
+  const canvas = document.getElementById('intro-canvas');
+  const logo = document.querySelector('.intro-logo');
+  const glow = document.getElementById('introGlow');
+  const lines = document.querySelector('.intro-lines');
+  const curtainTop = document.getElementById('introCurtainTop');
+  const curtainBot = document.getElementById('introCurtainBot');
+  if (!loader || !canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    loader.classList.add('done'); return;
+  }
+
+  // ── CANVAS PARTICLE SPARKS ──
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], raf;
+
+  function resize() {
+    W = canvas.width = loader.offsetWidth;
+    H = canvas.height = loader.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  function Particle() {
+    this.reset = function () {
+      this.x = W * (0.2 + Math.random() * 0.6);
+      this.y = H * (0.4 + Math.random() * 0.35);
+      this.vx = (Math.random() - 0.5) * 0.8;
+      this.vy = -(Math.random() * 1.8 + 0.5);
+      this.life = 0;
+      this.maxLife = 80 + Math.random() * 80;
+      this.size = Math.random() * 2.5 + 0.5;
+      this.hue = 20 + Math.random() * 25; // orange to amber
+    };
+    this.reset();
+  }
+  for (let i = 0; i < 55; i++) {
+    const p = new Particle();
+    p.life = Math.random() * p.maxLife; // stagger initial states
+    particles.push(p);
+  }
+
+  let loaderDone = false;
+  function drawParticles() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.life++;
+      if (p.life > p.maxLife) p.reset();
+      const alpha = Math.sin((p.life / p.maxLife) * Math.PI);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue}, 95%, 65%, ${alpha * 0.8})`;
+      ctx.fill();
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx += (Math.random() - 0.5) * 0.06;
+    });
+    if (!loaderDone) raf = requestAnimationFrame(drawParticles);
+    else ctx.clearRect(0, 0, W, H);
+  }
+  drawParticles();
+
+  // ── TIMELINE ──
+  // t=0ms  → logo appears
+  // t=300ms → glow erupts
+  // t=500ms → diagonal lines sweep
+  // t=1400ms → curtains rip open to reveal site
+  // t=2250ms → hero elements animate in
+
+  requestAnimationFrame(() => {
+    setTimeout(() => { logo.classList.add('visible'); }, 50);
+    setTimeout(() => { glow.classList.add('active'); }, 300);
+    setTimeout(() => { lines.classList.add('active'); }, 500);
+
+    // Curtain rip
+    setTimeout(() => {
+      curtainTop.classList.add('exit');
+      curtainBot.classList.add('exit');
+    }, 1350);
+
+    // Hide loader entirely after curtain exits
+    setTimeout(() => {
+      loader.classList.add('done');
+      loaderDone = true;
+      cancelAnimationFrame(raf);
+      // Trigger hero elements
+      triggerHeroAnimations();
+    }, 2150);
+  });
+})();
+
+/* ── HERO ELEMENT ANIMATIONS (called after intro finishes) ── */
+function triggerHeroAnimations() {
+  const items = document.querySelectorAll('.hero-anim-item');
+  items.forEach(el => {
+    const delay = parseInt(el.dataset.animDelay || '0', 10);
+    setTimeout(() => el.classList.add('in'), delay);
+  });
+  // Diagonal lines in hero
+  document.querySelectorAll('.hero-diag').forEach(d => d.classList.add('active'));
+  // Floating icon
+  const icon = document.querySelector('.hero-float-icon');
+  if (icon) icon.classList.add('active');
+}
+
+/* ── HERO PARTICLES (ambient — runs after intro) ── */
+(function () {
+  const canvas = document.getElementById('heroParticles');
+  if (!canvas || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+  let W, H;
+
+  function resize() {
+    const hero = canvas.closest('.hero');
+    W = canvas.width = hero ? hero.offsetWidth : window.innerWidth;
+    H = canvas.height = hero ? hero.offsetHeight : window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  const NUM = 35;
+  const particles = [];
+  function Particle() {
+    this.x = Math.random() * W;
+    this.y = Math.random() * H;
+    this.vx = (Math.random() - 0.5) * 0.3;
+    this.vy = -(Math.random() * 0.4 + 0.1);
+    this.size = Math.random() * 1.8 + 0.3;
+    this.alpha = Math.random() * 0.5 + 0.1;
+    this.hue = 20 + Math.random() * 30;
+    this.drift = (Math.random() - 0.5) * 0.008;
+  }
+  for (let i = 0; i < NUM; i++) particles.push(new Particle());
+
+  // Start particles after intro
+  setTimeout(() => {
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 90%, 60%, ${p.alpha})`;
+        ctx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx += p.drift;
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  }, 2200);
+})();
+
 /* ── THEME TOGGLE ── */
 (function () {
   const toggle = document.querySelector('[data-theme-toggle]');
