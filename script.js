@@ -501,3 +501,30 @@ document.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(link =>
     }, 800);
   });
 })();
+
+/* ── EDITORIAL HERO EXTRAS ── */
+// Activate bg ghost word + floating card after intro
+(function() {
+  setTimeout(() => {
+    const bgWord = document.querySelector('.hero-bg-word');
+    const floatCard = document.querySelector('.hero-float-card');
+    if (bgWord) bgWord.classList.add('active');
+    if (floatCard) floatCard.classList.add('active');
+  }, 2400);
+
+  // Subtle parallax on float card with mouse move
+  const floatCard = document.querySelector('.hero-float-card');
+  const hero = document.querySelector('.hero');
+  if (!floatCard || !hero || window.matchMedia('(pointer: coarse)').matches) return;
+  hero.addEventListener('mousemove', e => {
+    const rect = hero.getBoundingClientRect();
+    const cx = rect.width / 2;
+    const cy = rect.height / 2;
+    const dx = (e.clientX - rect.left - cx) / cx;
+    const dy = (e.clientY - rect.top - cy) / cy;
+    floatCard.style.transform = `translateY(${dy * -18}px) translateX(${dx * 10}px) rotate(${2 + dx * 1.5}deg)`;
+  });
+  hero.addEventListener('mouseleave', () => {
+    floatCard.style.transform = '';
+  });
+})();

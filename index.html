@@ -10,7 +10,7 @@
   <meta property="og:type" content="website" />
   <meta name="theme-color" content="#E85D04" />
 
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700,800,900&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -67,43 +67,54 @@
     </div>
   </header>
 
-  <!-- HERO -->
+  <!-- ═══════════════════════════════════════
+       HERO — EDITORIAL FULL-BLEED
+       ═══════════════════════════════════════ -->
   <section class="hero" id="home">
     <canvas class="hero-particles" id="heroParticles"></canvas>
+
+    <!-- Full-bleed background image -->
     <div class="hero-media" id="heroParallax">
       <img src="sb_hero.png" alt="Sandhu Brothers at a construction site at sunset" class="hero-img" id="heroImg" />
       <div class="hero-overlay"></div>
       <div class="hero-grain"></div>
     </div>
-    <!-- Diagonal accent lines -->
-    <div class="hero-diagonals" aria-hidden="true">
-      <div class="hero-diag hero-diag-1"></div>
-      <div class="hero-diag hero-diag-2"></div>
+
+    <!-- Giant background display text (Obsidian Assembly style) -->
+    <div class="hero-bg-word" aria-hidden="true">BUILT</div>
+
+    <!-- Floating image card (like the 3D object in the reference) -->
+    <div class="hero-float-card" id="heroFloatCard" aria-hidden="true">
+      <img src="svc_banner_building.png" alt="" />
+      <div class="hero-float-card-label">
+        <span class="hfc-tag">Perth, WA</span>
+        <span class="hfc-title">Est. 2019</span>
+      </div>
     </div>
-    <!-- Floating hardhat icon -->
-    <div class="hero-float-icon" aria-hidden="true">
-      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 38h48v6a4 4 0 01-4 4H12a4 4 0 01-4-4v-6z" stroke="#E85D04" stroke-width="2.5" stroke-linecap="round"/>
-        <path d="M32 10v20M20 38v-8c0-6.627 5.373-12 12-12s12 5.373 12 12v8" stroke="#E85D04" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M12 38v-6c0-11.046 8.954-20 20-20s20 8.954 20 20v6" stroke="rgba(232,93,4,0.35)" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </div>
+
+    <!-- Hero content anchored bottom-left -->
     <div class="hero-content">
       <div class="hero-eyebrow hero-anim-item" data-anim-delay="0">
         <div class="hero-eyebrow-line"></div>
         <span class="hero-eyebrow-text">Sandhu Brothers — Perth, WA</span>
       </div>
+
       <h1 class="hero-heading">
-        <span class="hero-line-wrap"><span class="hero-line hero-anim-item" data-anim-delay="120">Built Right.</span></span>
-        <span class="hero-line-wrap"><span class="hero-line hero-accent hero-anim-item" data-anim-delay="240">Every Time.</span></span>
+        <span class="hero-line-wrap"><span class="hero-line hero-anim-item" data-anim-delay="80">Built</span></span>
+        <span class="hero-line-wrap"><span class="hero-line hero-anim-item" data-anim-delay="180">Right.</span></span>
+        <span class="hero-line-wrap"><span class="hero-line hero-accent hero-anim-item" data-anim-delay="300">Every</span></span>
+        <span class="hero-line-wrap"><span class="hero-line hero-accent hero-anim-item" data-anim-delay="400">Time.</span></span>
       </h1>
-      <p class="hero-sub hero-anim-item" data-anim-delay="380">From landscaping to full renovations — residential &amp; commercial services across Perth.</p>
-      <div class="hero-actions hero-anim-item" data-anim-delay="500">
+
+      <p class="hero-sub hero-anim-item" data-anim-delay="520">From landscaping to full renovations — residential &amp; commercial services across Perth.</p>
+
+      <div class="hero-actions hero-anim-item" data-anim-delay="640">
         <a href="#contact" class="btn btn-primary magnetic-btn">Get a Free Quote</a>
-        <a href="#services" class="btn btn-ghost">Our Services</a>
+        <a href="#services" class="btn btn-ghost">View Services</a>
       </div>
-      <!-- Stats + Scroll at bottom -->
-      <div class="hero-bottom hero-anim-item" data-anim-delay="640">
+
+      <!-- Stats row -->
+      <div class="hero-bottom hero-anim-item" data-anim-delay="780">
         <div class="hero-stats">
           <div class="stat">
             <span class="stat-num counter" data-target="250" data-suffix="+">0</span>
@@ -133,7 +144,43 @@
     </div>
   </section>
 
-  <!-- APPLE-STYLE STICKY SCROLL SECTION -->
+  <!-- SERVICES TICKER STRIP -->
+  <div class="ticker-wrap">
+    <div class="ticker-track">
+      <span>Building Maintenance</span><span class="sep">✦</span>
+      <span>Artificial Grass</span><span class="sep">✦</span>
+      <span>Real Grass</span><span class="sep">✦</span>
+      <span>Concrete</span><span class="sep">✦</span>
+      <span>Decking</span><span class="sep">✦</span>
+      <span>Fencing</span><span class="sep">✦</span>
+      <span>Cladding</span><span class="sep">✦</span>
+      <span>Painting</span><span class="sep">✦</span>
+      <span>Retaining Walls</span><span class="sep">✦</span>
+      <span>Epoxy Floors</span><span class="sep">✦</span>
+      <span>Roof Painting</span><span class="sep">✦</span>
+      <span>Pressure Wash</span><span class="sep">✦</span>
+      <span>Garden Maintenance</span><span class="sep">✦</span>
+      <span>Wallpaper</span><span class="sep">✦</span>
+      <span>Building Maintenance</span><span class="sep">✦</span>
+      <span>Artificial Grass</span><span class="sep">✦</span>
+      <span>Real Grass</span><span class="sep">✦</span>
+      <span>Concrete</span><span class="sep">✦</span>
+      <span>Decking</span><span class="sep">✦</span>
+      <span>Fencing</span><span class="sep">✦</span>
+      <span>Cladding</span><span class="sep">✦</span>
+      <span>Painting</span><span class="sep">✦</span>
+      <span>Retaining Walls</span><span class="sep">✦</span>
+      <span>Epoxy Floors</span><span class="sep">✦</span>
+      <span>Roof Painting</span><span class="sep">✦</span>
+      <span>Pressure Wash</span><span class="sep">✦</span>
+      <span>Garden Maintenance</span><span class="sep">✦</span>
+      <span>Wallpaper</span><span class="sep">✦</span>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       APPLE-STYLE STICKY SCROLL
+       ═══════════════════════════════════════ -->
   <section class="sticky-scroll-section" id="stickyScroll">
     <div class="sticky-scroll-inner">
       <div class="sticky-scroll-left">
@@ -163,47 +210,25 @@
     </div>
   </section>
 
-  <!-- SERVICES TICKER STRIP -->
-  <div class="ticker-wrap">
-    <div class="ticker-track">
-      <span>Building Maintenance</span><span class="sep">✦</span>
-      <span>Artificial Grass</span><span class="sep">✦</span>
-      <span>Real Grass</span><span class="sep">✦</span>
-      <span>Concrete</span><span class="sep">✦</span>
-      <span>Decking</span><span class="sep">✦</span>
-      <span>Fencing</span><span class="sep">✦</span>
-      <span>Cladding</span><span class="sep">✦</span>
-      <span>Painting</span><span class="sep">✦</span>
-      <span>Retaining Walls</span><span class="sep">✦</span>
-      <span>Epoxy Floors</span><span class="sep">✦</span>
-      <span>Roof Painting</span><span class="sep">✦</span>
-      <span>Pressure Wash</span><span class="sep">✦</span>
-      <span>Garden Maintenance</span><span class="sep">✦</span>
-      <span>Wallpaper</span><span class="sep">✦</span>
-      <!-- duplicate for seamless loop -->
-      <span>Building Maintenance</span><span class="sep">✦</span>
-      <span>Artificial Grass</span><span class="sep">✦</span>
-      <span>Real Grass</span><span class="sep">✦</span>
-      <span>Concrete</span><span class="sep">✦</span>
-      <span>Decking</span><span class="sep">✦</span>
-      <span>Fencing</span><span class="sep">✦</span>
-      <span>Cladding</span><span class="sep">✦</span>
-      <span>Painting</span><span class="sep">✦</span>
-      <span>Retaining Walls</span><span class="sep">✦</span>
-      <span>Epoxy Floors</span><span class="sep">✦</span>
-      <span>Roof Painting</span><span class="sep">✦</span>
-      <span>Pressure Wash</span><span class="sep">✦</span>
-      <span>Garden Maintenance</span><span class="sep">✦</span>
-      <span>Wallpaper</span><span class="sep">✦</span>
-    </div>
-  </div>
-
-  <!-- ABOUT -->
+  <!-- ═══════════════════════════════════════
+       ABOUT — EDITORIAL SPLIT LAYOUT
+       ═══════════════════════════════════════ -->
   <section class="about" id="about">
+    <!-- Large edge-bleed label -->
+    <div class="about-bleed-label" aria-hidden="true">SANDHU BROTHERS</div>
     <div class="about-inner container">
       <div class="about-image-col reveal-left">
-        <img src="logo.png" alt="Sandhu Brothers – SB Construction" class="about-img" />
-
+        <div class="about-img-stack">
+          <img src="sb_hero.png" alt="SB Construction team on site" class="about-img-main" />
+          <div class="about-img-badge">
+            <img src="logo.png" alt="SB Construction logo" />
+          </div>
+          <!-- Floating stat card -->
+          <div class="about-stat-pill">
+            <span class="asp-num">250+</span>
+            <span class="asp-label">Projects Completed</span>
+          </div>
+        </div>
       </div>
       <div class="about-text-col reveal-right">
         <p class="section-label">Who We Are</p>
@@ -220,23 +245,39 @@
     </div>
   </section>
 
-  <!-- SERVICES -->
+  <!-- ═══════════════════════════════════════
+       SERVICES — EDITORIAL
+       ═══════════════════════════════════════ -->
   <section class="services" id="services">
-    <div class="container">
-      <div class="section-header reveal-up">
-        <p class="section-label centered">What We Do</p>
-        <h2 class="section-heading centered">Our Services</h2>
-        <p class="section-sub centered">From ground-up builds to finishing touches — every trade covered.</p>
+    <!-- Full-bleed oversized section intro -->
+    <div class="services-intro">
+      <div class="services-intro-inner container">
+        <p class="section-label centered" style="color:rgba(255,140,60,0.9)">What We Do</p>
+        <h2 class="services-giant-heading">Our<br><em>Services</em></h2>
+        <p class="section-sub centered" style="color:rgba(255,255,255,0.4);margin:0 auto;">From ground-up builds to finishing touches — every trade covered.</p>
       </div>
+    </div>
 
-      <!-- BUILDING & RENOVATION -->
+    <div class="container">
+
+      <!-- ─── BUILDING & RENOVATION ─── -->
       <div class="service-category reveal-up">
+        <!-- Edge-bleed category title -->
+        <div class="cat-editorial-header">
+          <div class="cat-number">01</div>
+          <div class="cat-title-wrap">
+            <h3 class="cat-giant-title">Building &amp;<br>Renovation</h3>
+          </div>
+          <div class="cat-rule"></div>
+        </div>
+
         <div class="category-banner" style="background-image: url('svc_banner_building.png')">
           <div class="category-banner-overlay">
             <div class="category-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-            <h3>Building & Renovation</h3>
+            <h4>Structure. Strength. Finish.</h4>
           </div>
         </div>
+
         <div class="service-cards">
           <div class="service-card photo-card">
             <div class="card-photo" style="background-image: url('svc_maintenance.png')"></div>
@@ -265,14 +306,23 @@
         </div>
       </div>
 
-      <!-- LANDSCAPING & GARDEN -->
+      <!-- ─── LANDSCAPING & GARDEN ─── -->
       <div class="service-category reveal-up">
+        <div class="cat-editorial-header">
+          <div class="cat-number">02</div>
+          <div class="cat-title-wrap">
+            <h3 class="cat-giant-title">Landscaping<br>&amp; Garden</h3>
+          </div>
+          <div class="cat-rule"></div>
+        </div>
+
         <div class="category-banner" style="background-image: url('svc_banner_landscaping.png')">
           <div class="category-banner-overlay">
             <div class="category-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22V12M12 12C12 7 7 3 3 3c0 4 2 8 9 9M12 12c0-5 5-9 9-9 0 4-2 8-9 9"/></svg></div>
-            <h3>Landscaping & Garden</h3>
+            <h4>Outdoors reimagined.</h4>
           </div>
         </div>
+
         <div class="service-cards">
           <div class="service-card photo-card">
             <div class="card-photo" style="background-image: url('svc_artificial_grass.png')"></div>
@@ -301,14 +351,23 @@
         </div>
       </div>
 
-      <!-- PAINTING SERVICES -->
+      <!-- ─── PAINTING SERVICES ─── -->
       <div class="service-category reveal-up">
+        <div class="cat-editorial-header">
+          <div class="cat-number">03</div>
+          <div class="cat-title-wrap">
+            <h3 class="cat-giant-title">Painting<br>Services</h3>
+          </div>
+          <div class="cat-rule"></div>
+        </div>
+
         <div class="category-banner" style="background-image: url('svc_banner_painting.png')">
           <div class="category-banner-overlay">
             <div class="category-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
-            <h3>Painting Services</h3>
+            <h4>Colour that transforms.</h4>
           </div>
         </div>
+
         <div class="service-cards">
           <div class="service-card photo-card">
             <div class="card-photo" style="background-image: url('svc_interior_paint.png')"></div>
@@ -336,6 +395,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </section>
 
@@ -344,7 +404,7 @@
     <div class="container">
       <div class="section-header reveal-up">
         <p class="section-label centered">Transformations</p>
-        <h2 class="section-heading centered">Before & After</h2>
+        <h2 class="section-heading centered">Before &amp; After</h2>
         <p class="section-sub centered">Drag the slider to reveal the transformation.</p>
       </div>
       <div class="ba-slider reveal-up" id="baSlider">
@@ -367,8 +427,10 @@
   <!-- HORIZONTAL GALLERY -->
   <section class="gallery-section">
     <div class="gallery-header container reveal-up">
-      <p class="section-label">Our Work</p>
-      <h2 class="section-heading">Project Gallery</h2>
+      <div>
+        <p class="section-label">Our Work</p>
+        <h2 class="section-heading">Project Gallery</h2>
+      </div>
       <p class="gallery-drag-hint">← Drag to explore →</p>
     </div>
     <div class="gallery-track-wrap" id="galleryWrap">
@@ -384,7 +446,7 @@
     </div>
   </section>
 
-  <!-- WHY US – DARK -->
+  <!-- WHY US -->
   <section class="why-us">
     <div class="container">
       <div class="section-header reveal-up">
