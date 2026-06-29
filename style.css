@@ -65,7 +65,7 @@ p,li{text-wrap:pretty;max-width:68ch;}
   opacity: 0;
   transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), box-shadow var(--transition);
 }
-.site-header.reveal {
+.site-header.visible {
   opacity: 1;
   transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), box-shadow var(--transition);
 }
@@ -89,7 +89,7 @@ p,li{text-wrap:pretty;max-width:68ch;}
 .reveal-up { opacity: 0; transform: translateY(32px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1) var(--delay, 0s), transform 0.7s cubic-bezier(0.16,1,0.3,1) var(--delay, 0s); }
 .reveal-left { opacity: 0; transform: translateX(-32px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1) var(--delay, 0s), transform 0.7s cubic-bezier(0.16,1,0.3,1) var(--delay, 0s); }
 .reveal-right { opacity: 0; transform: translateX(32px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1) var(--delay, 0s), transform 0.7s cubic-bezier(0.16,1,0.3,1) var(--delay, 0s); }
-.reveal-up.visible,.reveal-left.visible,.reveal-right.visible { opacity:1; transform:none; }
+.reveal-up.in-view,.reveal-left.in-view,.reveal-right.in-view { opacity:1; transform:none; }
 @media (prefers-reduced-motion: reduce) {
   .reveal-up,.reveal-left,.reveal-right { opacity:1; transform:none; transition:none; }
   
@@ -1073,8 +1073,9 @@ p,li{text-wrap:pretty;max-width:68ch;}
   50% { transform:scaleY(0.55); opacity:0.35; }
 }
 
-/* hero-anim-item for any stray uses */
-.hero-anim-item { opacity:0; }
+/* hero-anim-item */
+.hero-anim-item { opacity:0; transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.hero-anim-item.revealed { opacity:1; transform:none; }
 
 /* ─────────────────────────────────────────────────────────────
    CINEMATIC FULL-BLEED PANELS — Feadship style

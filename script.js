@@ -1,26 +1,44 @@
 // ================================
-// SB CONSTRUCTION – PREMIUM SCRIPTS v3
+// SB CONSTRUCTION – PREMIUM SCRIPTS v4 (fixed)
 // ================================
 
 /* ══════════════════════════════════════════════════
    CINEMATIC INTRO — BUILDING CONSTRUCTION ANIMATION
+   Hard timeout: site ALWAYS shows within 2.8s max.
 ══════════════════════════════════════════════════ */
 (function () {
   const loader = document.getElementById('intro-loader');
-  if (!loader) return;
+  if (!loader) { revealHero(); return; }
+
+  // HARD TIMEOUT — site always shows regardless of animation errors
+  const HARD_LIMIT = 2800; // ms max before forced reveal
+  const hardTimer = setTimeout(() => {
+    loader.classList.add('done');
+    setTimeout(() => { loader.style.display = 'none'; }, 600);
+    revealHero();
+  }, HARD_LIMIT);
 
   // Reduced motion: skip immediately
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    clearTimeout(hardTimer);
     loader.classList.add('done');
-    setTimeout(() => { loader.style.display='none'; revealHero(); }, 650);
+    setTimeout(() => { loader.style.display = 'none'; revealHero(); }, 400);
     return;
   }
 
   const canvas = document.getElementById('intro-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  if (!canvas) { clearTimeout(hardTimer); revealHero(); return; }
+
+  let ctx;
+  try { ctx = canvas.getContext('2d'); } catch(e) {
+    clearTimeout(hardTimer); loader.classList.add('done'); revealHero(); return;
+  }
+
   let W, H;
-  function resize() { W = canvas.width = loader.offsetWidth; H = canvas.height = loader.offsetHeight; }
+  function resize() {
+    W = canvas.width  = loader.offsetWidth  || window.innerWidth;
+    H = canvas.height = loader.offsetHeight || window.innerHeight;
+  }
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
@@ -33,52 +51,51 @@
 
   // Dust particles
   const dust = [];
-  function spawnDust(x, y, n=10) {
-    for (let i=0;i<n;i++) {
+  function spawnDust(x, y, n) {
+    for (let i = 0; i < (n||8); i++) {
       dust.push({ x, y, vx:(Math.random()-0.5)*3, vy:-(Math.random()*2+0.5),
-        life:0, maxLife:28+Math.random()*28, size:Math.random()*4+1 });
+        life:0, maxLife:24+Math.random()*24, size:Math.random()*3+1 });
     }
   }
   function tickDust() {
-    for (let i=dust.length-1;i>=0;i--) {
-      const p=dust[i]; p.life++;
-      if (p.life>p.maxLife){dust.splice(i,1);continue;}
-      const a=(1-p.life/p.maxLife)*0.5;
+    for (let i = dust.length-1; i >= 0; i--) {
+      const p = dust[i]; p.life++;
+      if (p.life > p.maxLife) { dust.splice(i,1); continue; }
+      const a = (1-p.life/p.maxLife)*0.45;
       ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-      ctx.fillStyle=C.dust+a+')'; ctx.fill();
+      ctx.fillStyle = C.dust+a+')'; ctx.fill();
       p.x+=p.vx; p.y+=p.vy; p.vx*=0.96; p.vy*=0.96;
     }
   }
 
-  // Building metrics
   function metrics() {
-    const bW=Math.min(W*0.44,260), bH=Math.min(H*0.58,340);
-    const groundY=H*0.74, bX=(W-bW)/2, bY=groundY-bH;
-    const floors=6, floorH=bH/floors;
-    return {bW,bH,bX,bY,groundY,floors,floorH};
+    const bW=Math.min(W*0.42,240), bH=Math.min(H*0.55,310);
+    const groundY=H*0.74, bX=(W-bW)/2;
+    const floors=5, floorH=bH/floors;
+    return {bW,bH,bX,bY:groundY-bH,groundY,floors,floorH};
   }
 
-  // Phase definitions
-  const PHASES = 7;
-  const LABELS = ['Laying Foundation…','Pouring Concrete Slab…','Raising Steel Frame…','Installing Floor Slabs…','Fitting Glass Facade…','Final Finish & Lights…','Complete.'];
-  const PHASE_MS = 380;
-  let phase=0, phaseP=0, lastT=null, raf;
+  // 5 phases, 280ms each = 1.4s animation, then ~1s for logo+curtain = ~2.4s total
+  const PHASES = 5;
+  const LABELS = ['Foundation…','Steel Frame…','Glass Facade…','Finishing…','Complete.'];
+  const PHASE_MS = 280;
+  let phase=0, phaseP=0, lastT=null, raf, done=false;
 
   function drawScene(ph, pp) {
     ctx.clearRect(0,0,W,H);
-    const {bW,bH,bX,bY,groundY,floors,floorH} = metrics();
+    const {bW,bH,bX,groundY,floors,floorH} = metrics();
 
     // Sky
     const sky=ctx.createLinearGradient(0,0,0,H);
-    sky.addColorStop(0,'#040302'); sky.addColorStop(1,'#0e0c09');
+    sky.addColorStop(0,'#040302'); sky.addColorStop(1,'#0f0d0a');
     ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
 
-    // Stars (dims as building gets lighter)
-    const starAlpha = Math.max(0, 0.6 - ph*0.1);
-    for(let s=0;s<55;s++) {
-      const sx=((s*137.5)%1)*W, sy=((s*93.7)%1)*groundY*0.75;
+    // Stars
+    for(let s=0;s<40;s++){
+      const sx=((s*137.5)%1)*W, sy=((s*93.7)%1)*groundY*0.7;
+      const sa=Math.max(0,0.45-ph*0.08);
       ctx.beginPath(); ctx.arc(sx,sy,0.7,0,Math.PI*2);
-      ctx.fillStyle=`rgba(255,255,255,${starAlpha*((s*61.3)%0.45+0.1)})`; ctx.fill();
+      ctx.fillStyle=`rgba(255,255,255,${sa*((s*61.3)%0.4+0.1)})`; ctx.fill();
     }
 
     // Ground
@@ -86,67 +103,42 @@
     ctx.strokeStyle=C.steel; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(0,groundY); ctx.lineTo(W,groundY); ctx.stroke();
 
-    // Phase 0: Excavation trench
-    if(ph>=0) {
-      const dep=26*Math.min(ph===0?pp*1.6:1,1);
-      const fPad=bW*0.06;
-      ctx.fillStyle='#0e0c09';
-      ctx.fillRect(bX-fPad,groundY,bW+fPad*2,dep);
-    }
-    if(ph<1)return;
+    const fPad = bW*0.06;
+    const slabH = 10;
 
-    // Phase 1: Concrete slab
-    const slabH=10;
-    const sf=ph===1?pp:(ph>1?1:0);
+    // Phase 0: Foundation trench + slab
+    const slabF = ph===0 ? pp : (ph>0?1:0);
+    ctx.fillStyle='#0b0908';
+    ctx.fillRect(bX-fPad, groundY, bW+fPad*2, 22*Math.min(slabF*2,1));
     ctx.fillStyle=C.concrete;
-    const fPad=bW*0.06;
-    ctx.fillRect(bX-fPad,groundY-slabH,(bW+fPad*2)*sf,slabH);
-    if(ph<2)return;
+    ctx.fillRect(bX-fPad, groundY-slabH, (bW+fPad*2)*slabF, slabH);
+    if(ph<1) return;
 
-    // Phase 2: Steel columns + beams rising
-    const frameF=ph===2?Math.round(floors*pp):floors;
-    for(let f=0;f<frameF;f++) {
-      const fy=groundY-slabH;
-      const fp=ph===2?Math.max(0,Math.min(1,pp*floors-f)):1;
-      // Left col
+    // Phase 1: Steel frame rising floor by floor
+    const frameF = ph===1 ? Math.round(floors*pp) : floors;
+    for(let f=0;f<frameF;f++){
+      const fp = ph===1 ? Math.max(0,Math.min(1, pp*floors-f)) : 1;
+      const baseY = groundY-slabH;
       ctx.fillStyle=C.steel;
-      ctx.fillRect(bX,fy-floorH*(f+1),5,floorH*fp);
-      // Right col
-      ctx.fillRect(bX+bW-5,fy-floorH*(f+1),5,floorH*fp);
-      // Beam
-      if(fp>=0.85) {
-        ctx.fillStyle=C.steelHi;
-        ctx.fillRect(bX,fy-floorH*(f+1),bW,4);
-      }
+      ctx.fillRect(bX, baseY-floorH*(f+1), 5, floorH*fp);
+      ctx.fillRect(bX+bW-5, baseY-floorH*(f+1), 5, floorH*fp);
+      if(fp>=0.85){ ctx.fillStyle=C.steelHi; ctx.fillRect(bX,baseY-floorH*(f+1),bW,4); }
     }
-    // Bracing diagonals
-    if(ph>=2) {
-      ctx.strokeStyle='rgba(90,85,80,0.4)'; ctx.lineWidth=1.5; ctx.setLineDash([4,5]);
-      for(let f=0;f<Math.min(frameF,floors);f++) {
-        const fy=groundY-slabH-floorH*f;
-        ctx.beginPath(); ctx.moveTo(bX+8,fy); ctx.lineTo(bX+bW/2,fy-floorH); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(bX+bW-8,fy); ctx.lineTo(bX+bW/2,fy-floorH); ctx.stroke();
-      }
-      ctx.setLineDash([]);
+    // Cross bracing
+    ctx.strokeStyle='rgba(85,80,75,0.35)'; ctx.lineWidth=1.5; ctx.setLineDash([4,5]);
+    for(let f=0;f<Math.min(frameF,floors);f++){
+      const fy=groundY-slabH-floorH*f;
+      ctx.beginPath(); ctx.moveTo(bX+8,fy); ctx.lineTo(bX+bW/2,fy-floorH); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bX+bW-8,fy); ctx.lineTo(bX+bW/2,fy-floorH); ctx.stroke();
     }
-    if(ph<3)return;
+    ctx.setLineDash([]);
+    if(ph<2) return;
 
-    // Phase 3: Floor slabs
-    const fillF=ph===3?Math.round(floors*pp):floors;
-    for(let f=0;f<fillF;f++) {
-      const fy=groundY-slabH-floorH*(f+1);
-      const fp=ph===3?Math.max(0,Math.min(1,pp*floors-f)):1;
-      ctx.fillStyle=`rgba(44,41,36,${0.75*fp})`;
-      ctx.fillRect(bX+5,fy+4,(bW-10)*fp,floorH-4);
-      if(fp>=0.92){ctx.fillStyle=C.concrete;ctx.fillRect(bX+5,fy+floorH-3,bW-10,3);}
-    }
-    if(ph<4)return;
-
-    // Phase 4: Glass facade panels
-    const totalPanels=floors*4;
-    const drawn4=ph===4?Math.round(totalPanels*pp):totalPanels;
+    // Phase 2: Glass facade panels
+    const totalPanels = floors*4;
+    const drawnP = ph===2 ? Math.round(totalPanels*pp) : totalPanels;
     const panW=(bW-12)/4;
-    for(let i=0;i<drawn4&&i<totalPanels;i++) {
+    for(let i=0;i<drawnP&&i<totalPanels;i++){
       const f=Math.floor(i/4), p=i%4;
       const px=bX+6+p*panW, py=groundY-slabH-(f+1)*floorH+6;
       const pw=panW-3, phh=floorH-10;
@@ -157,130 +149,149 @@
       ctx.fillStyle=grd; ctx.fillRect(px,py,pw,phh);
       ctx.fillStyle='rgba(255,255,255,0.07)'; ctx.fillRect(px,py,pw*0.14,phh);
     }
-    // Exterior outline
     ctx.strokeStyle=C.steelHi; ctx.lineWidth=2;
-    ctx.strokeRect(bX,groundY-slabH-bH,bW,bH);
-    if(ph<5)return;
+    ctx.strokeRect(bX, groundY-slabH-bH, bW, bH);
+    if(ph<3) return;
 
-    // Phase 5: Finishing — orange accents, roof, window glow
-    const fp5=ph===5?pp:1;
-    // Orange vertical accents
-    ctx.fillStyle=`rgba(232,93,4,${0.75*fp5})`;
-    ctx.fillRect(bX,groundY-slabH-bH*0.4,5,bH*0.4*fp5);
-    ctx.fillRect(bX+bW-5,groundY-slabH-bH*0.4,5,bH*0.4*fp5);
-    // Roof parapet
+    // Phase 3: Finishing touches
+    const fp3 = ph===3?pp:1;
+    ctx.fillStyle=`rgba(232,93,4,${0.8*fp3})`;
+    ctx.fillRect(bX, groundY-slabH-bH*0.45, 5, bH*0.45*fp3);
+    ctx.fillRect(bX+bW-5, groundY-slabH-bH*0.45, 5, bH*0.45*fp3);
     ctx.fillStyle=C.concrete;
-    ctx.fillRect(bX-4,groundY-slabH-bH-9,(bW+8)*fp5,9);
-    // Window warm glow
-    for(let f=0;f<floors;f++) {
-      const fy=groundY-slabH-(f+1)*floorH+floorH*0.15;
-      const glow=ctx.createRadialGradient(bX+bW/2,fy+floorH*0.5,0,bX+bW/2,fy+floorH*0.5,bW*0.55);
-      glow.addColorStop(0,`rgba(232,93,4,${0.07*fp5})`);
-      glow.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=glow; ctx.fillRect(bX-bW*0.2,fy,bW*1.4,floorH);
+    ctx.fillRect(bX-4, groundY-slabH-bH-8, (bW+8)*fp3, 8);
+    // Window glow
+    for(let f=0;f<floors;f++){
+      const fy=groundY-slabH-(f+1)*floorH+floorH*0.2;
+      const grd=ctx.createRadialGradient(bX+bW/2,fy+floorH*0.4,0,bX+bW/2,fy+floorH*0.4,bW*0.5);
+      grd.addColorStop(0,`rgba(232,93,4,${0.07*fp3})`); grd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=grd; ctx.fillRect(bX-bW*0.15,fy,bW*1.3,floorH);
     }
-    // Ground ambient glow
-    const bg=ctx.createRadialGradient(W/2,groundY,0,W/2,groundY,W*0.48);
-    bg.addColorStop(0,`rgba(232,93,4,${0.18*fp5})`); bg.addColorStop(1,'rgba(0,0,0,0)');
+    const bg=ctx.createRadialGradient(W/2,groundY,0,W/2,groundY,W*0.45);
+    bg.addColorStop(0,`rgba(232,93,4,${0.18*fp3})`); bg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=bg; ctx.fillRect(0,groundY-50,W,90);
-    if(ph<6)return;
+    if(ph<4) return;
 
-    // Phase 6: Final — full glow
-    const fp6=ph===6?pp:1;
-    const topGlow=ctx.createRadialGradient(W/2,groundY-slabH-bH/2,0,W/2,groundY-slabH-bH/2,bW*0.9);
-    topGlow.addColorStop(0,`rgba(232,93,4,${0.12*fp6})`); topGlow.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=topGlow; ctx.fillRect(bX-bW*0.5,groundY-slabH-bH-20,bW*2,bH+20);
+    // Phase 4: Full ambient glow
+    const fp4=ph===4?pp:1;
+    const hGlow=ctx.createRadialGradient(W/2,groundY-slabH-bH/2,0,W/2,groundY-slabH-bH/2,bW);
+    hGlow.addColorStop(0,`rgba(232,93,4,${0.1*fp4})`); hGlow.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=hGlow; ctx.fillRect(bX-bW*0.6,groundY-slabH-bH-20,bW*2.2,bH+20);
   }
 
-  function drawCrane(ph) {
+  function drawCrane() {
     const {bX,bW,bH,groundY}=metrics();
-    const cx=bX+bW+20, cy=groundY, mH=bH+55;
+    const cx=bX+bW+18, cy=groundY, mH=bH+50;
     ctx.strokeStyle=C.crane; ctx.lineCap='round';
-    // Mast
-    ctx.lineWidth=6; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx,cy-mH); ctx.stroke();
-    // Jib
-    const jibL=bW*0.55+36;
-    ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(cx-bW*0.15,cy-mH+10); ctx.lineTo(cx+jibL,cy-mH+10); ctx.stroke();
-    // Counter
-    ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(cx,cy-mH+10); ctx.lineTo(cx-bW*0.38,cy-mH+10); ctx.stroke();
-    // Trolley & hook
+    ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx,cy-mH); ctx.stroke();
+    const jibL=bW*0.5+32;
+    ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(cx+jibL,cy-mH+10); ctx.lineTo(cx-bW*0.35,cy-mH+10); ctx.stroke();
     const t=Date.now()/1000;
-    const trolleyX=cx+jibL-jibL*(Math.sin(t*0.5)*0.4+0.5)*0.7;
-    const hookL=25+Math.abs(Math.sin(t*0.7))*22;
+    const trolleyX=cx+jibL-(jibL*(Math.sin(t*0.5)*0.4+0.5)*0.65);
+    const hookL=22+Math.abs(Math.sin(t*0.7))*18;
     ctx.strokeStyle=C.craneYel; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(trolleyX,cy-mH+10); ctx.lineTo(trolleyX,cy-mH+10+hookL); ctx.stroke();
-    ctx.fillStyle=C.craneYel; ctx.fillRect(trolleyX-5,cy-mH+10+hookL,10,7);
-    // Cab
-    ctx.fillStyle=C.craneYel; ctx.fillRect(cx-11,cy-mH+12,22,16);
+    ctx.fillStyle=C.craneYel; ctx.fillRect(trolleyX-4,cy-mH+10+hookL,8,6);
+    ctx.fillRect(cx-10,cy-mH+12,20,14);
   }
 
   const progressBar = document.querySelector('.intro-progress-bar');
   const phaseLabel  = document.querySelector('.intro-phase-label');
 
   function animate(ts) {
-    if(!lastT) lastT=ts;
-    const dt=Math.min(ts-lastT, 80); // cap dt for tab-switch lag
-    lastT=ts;
-    phaseP += dt/PHASE_MS;
-    if(phaseP>=1) {
-      phaseP=0; phase++;
-      if(phase>0 && phase<6) {
-        const {bX,bW,groundY,floorH}=metrics();
-        spawnDust(bX+bW/2, groundY-floorH*(phase-1), 14);
+    if (done) return;
+    try {
+      if(!lastT) lastT=ts;
+      const dt = Math.min(ts-lastT, 100);
+      lastT=ts;
+      phaseP += dt/PHASE_MS;
+      if(phaseP>=1){
+        phaseP=0; phase++;
+        if(phase>0 && phase<4){
+          const {bX,bW,groundY,floorH}=metrics();
+          spawnDust(bX+bW/2, groundY-floorH*(phase), 10);
+        }
       }
+      const gP=Math.min((phase+phaseP)/PHASES, 1);
+      if(progressBar) progressBar.style.width=(gP*100)+'%';
+      if(phaseLabel && phase<LABELS.length) phaseLabel.textContent=LABELS[phase];
+      drawScene(phase, phaseP);
+      drawCrane();
+      tickDust();
+      if(phase < PHASES) {
+        raf=requestAnimationFrame(animate);
+      } else {
+        finishIntro();
+      }
+    } catch(e) {
+      // If anything crashes, immediately show the site
+      console.warn('Intro animation error:', e);
+      done=true;
+      clearTimeout(hardTimer);
+      loader.classList.add('done');
+      setTimeout(()=>{ loader.style.display='none'; },500);
+      revealHero();
     }
-    const gP=(phase+phaseP)/PHASES;
-    if(progressBar) progressBar.style.width=(Math.min(gP,1)*100)+'%';
-    if(phaseLabel && phase<LABELS.length) phaseLabel.textContent=LABELS[phase];
-
-    drawScene(phase, phaseP);
-    drawCrane(phase);
-    tickDust();
-
-    if(phase<PHASES) raf=requestAnimationFrame(animate);
-    else finishIntro();
   }
   raf=requestAnimationFrame(animate);
 
   function finishIntro() {
+    if (done) return;
+    done = true;
+    clearTimeout(hardTimer);
     cancelAnimationFrame(raf);
-    drawScene(6,1); drawCrane(6); // final frame
+
+    // Draw final frame
+    try { drawScene(4,1); drawCrane(); } catch(e){}
+
     if(progressBar) progressBar.style.width='100%';
     if(phaseLabel) phaseLabel.textContent='Complete.';
 
+    // Logo flash
     const finalLogo=document.querySelector('.intro-final-logo');
-    if(finalLogo) setTimeout(()=>finalLogo.classList.add('visible'), 250);
+    if(finalLogo) setTimeout(()=>finalLogo.classList.add('visible'), 150);
 
+    // Fade in hero image behind curtains
     setTimeout(()=>{
       const hm=document.querySelector('.hero-media');
       if(hm) hm.classList.add('reveal');
-    }, 700);
+    }, 400);
 
+    // Curtain rip
     setTimeout(()=>{
       document.getElementById('introCurtainTop')?.classList.add('exit');
       document.getElementById('introCurtainBot')?.classList.add('exit');
-    }, 1100);
+    }, 700);
 
+    // Fade out loader
     setTimeout(()=>{
       loader.classList.add('done');
-      setTimeout(()=>{loader.style.display='none';},700);
-    }, 1500);
+      setTimeout(()=>{ loader.style.display='none'; },600);
+    }, 900);
 
-    setTimeout(revealHero, 1600);
+    // Reveal hero content
+    setTimeout(revealHero, 1000);
   }
 
   function revealHero() {
+    // Brand overlay lines stagger in
     document.querySelectorAll('.hbo-line').forEach((el,i)=>{
-      setTimeout(()=>el.classList.add('revealed'), i*85);
+      setTimeout(()=>el.classList.add('revealed'), i*70);
     });
-    setTimeout(()=>document.getElementById('heroDescriptor')?.classList.add('revealed'), 340);
-    setTimeout(()=>document.querySelector('.hero-hud-left')?.classList.add('revealed'), 440);
-    setTimeout(()=>document.querySelector('.hero-hud-right')?.classList.add('revealed'), 560);
-    setTimeout(startCounters, 640);
-    setTimeout(()=>document.getElementById('site-header')?.classList.add('visible'), 720);
+    // Descriptor badge
+    setTimeout(()=>document.getElementById('heroDescriptor')?.classList.add('revealed'), 280);
+    // HUD
+    setTimeout(()=>document.querySelector('.hero-hud-left')?.classList.add('revealed'), 360);
+    setTimeout(()=>document.querySelector('.hero-hud-right')?.classList.add('revealed'), 460);
+    // Counters
+    setTimeout(startCounters, 520);
+    // Nav — use BOTH .visible and .reveal so it definitely shows
+    setTimeout(()=>{
+      const hdr=document.getElementById('site-header');
+      if(hdr){ hdr.classList.add('visible'); hdr.classList.add('reveal'); }
+    }, 600);
   }
 })();
-
 
 /* ══════════════════════════════════════════════════
    NAV SCROLL BEHAVIOUR
@@ -308,19 +319,25 @@
 })();
 
 /* ══════════════════════════════════════════════════
-   HERO PARALLAX on mousemove
+   HERO PARALLAX
 ══════════════════════════════════════════════════ */
 (function() {
-  const hero = document.querySelector('.hero');
+  const hero  = document.querySelector('.hero');
   const media = document.getElementById('heroParallax');
   if (!hero || !media) return;
+  let ticking = false;
   hero.addEventListener('mousemove', (e) => {
-    const { width, height, left, top } = hero.getBoundingClientRect();
-    const x = ((e.clientX - left) / width - 0.5) * 14;
-    const y = ((e.clientY - top) / height - 0.5) * 9;
-    media.style.transform = `scale(1.04) translate(${x}px, ${y}px)`;
-    const overlay = document.getElementById('heroBrandOverlay');
-    if (overlay) overlay.style.transform = `translate(${x*0.28}px, ${y*0.28}px)`;
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const { width, height, left, top } = hero.getBoundingClientRect();
+      const x = ((e.clientX - left) / width - 0.5) * 14;
+      const y = ((e.clientY - top) / height - 0.5) * 9;
+      media.style.transform = `scale(1.04) translate(${x}px, ${y}px)`;
+      const overlay = document.getElementById('heroBrandOverlay');
+      if (overlay) overlay.style.transform = `translate(${x*0.28}px, ${y*0.28}px)`;
+      ticking = false;
+    });
   });
   hero.addEventListener('mouseleave', () => {
     media.style.transform = '';
@@ -338,12 +355,11 @@ function startCounters() {
     const suffix = el.dataset.suffix || '';
     if (!target) return;
     let start = 0;
-    const dur = 1700;
+    const dur = 1500;
     const step = ts => {
       if (!start) start = ts;
       const p = Math.min((ts - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(ease * target) + suffix;
+      el.textContent = Math.round((1 - Math.pow(1-p, 3)) * target) + suffix;
       if (p < 1) requestAnimationFrame(step);
     };
     requestAnimationFrame(step);
@@ -351,16 +367,21 @@ function startCounters() {
 }
 
 /* ══════════════════════════════════════════════════
-   SCROLL REVEAL
+   SCROLL REVEAL — uses IntersectionObserver, adds 'in-view'
 ══════════════════════════════════════════════════ */
 (function() {
-  const els = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .service-category, .why-card');
+  const els = document.querySelectorAll(
+    '.reveal-up, .reveal-left, .reveal-right, .service-category, .why-card'
+  );
   if (!els.length) return;
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
+      if (e.isIntersecting) {
+        e.target.classList.add('in-view');
+        io.unobserve(e.target);
+      }
     });
-  }, { threshold: 0.12 });
+  }, { threshold: 0.1 });
   els.forEach(el => io.observe(el));
 })();
 
@@ -374,12 +395,12 @@ function startCounters() {
     entries.forEach(e => {
       if (e.isIntersecting) { e.target.classList.add('in-view'); io.unobserve(e.target); }
     });
-  }, { threshold: 0.15 });
+  }, { threshold: 0.1 });
   panels.forEach(p => io.observe(p));
 })();
 
 /* ══════════════════════════════════════════════════
-   STICKY SCROLL (Apple-style)
+   STICKY SCROLL
 ══════════════════════════════════════════════════ */
 (function() {
   const section = document.getElementById('stickyScroll');
@@ -393,7 +414,7 @@ function startCounters() {
       const idx = parseInt(e.target.dataset.step);
       imgs.forEach(img => img.classList.toggle('active', parseInt(img.dataset.index) === idx));
     });
-  }, { threshold: 0.55 });
+  }, { threshold: 0.5 });
   steps.forEach(s => io.observe(s));
 })();
 
@@ -405,11 +426,12 @@ function startCounters() {
   if (!slider) return;
   const handle = document.getElementById('baHandle');
   const before = slider.querySelector('.ba-before');
+  if (!handle || !before) return;
   let dragging = false;
   function setPos(x) {
     const rect = slider.getBoundingClientRect();
     const pct  = Math.max(2, Math.min(98, ((x - rect.left) / rect.width) * 100));
-    before.style.clipPath = `inset(0 ${100 - pct}% 0 0)`;
+    before.style.clipPath = `inset(0 ${100-pct}% 0 0)`;
     handle.style.left = pct + '%';
   }
   setPos(slider.getBoundingClientRect().left + slider.offsetWidth * 0.5);
@@ -440,8 +462,8 @@ function startCounters() {
 (function() {
   const track = document.getElementById('testimonialsTrack');
   if (!track) return;
-  const cards   = track.querySelectorAll('.testimonial-card');
-  const dotsWrap= document.getElementById('carouselDots');
+  const cards    = track.querySelectorAll('.testimonial-card');
+  const dotsWrap = document.getElementById('carouselDots');
   let current=0;
   const dots = Array.from({length:cards.length},(_,i)=>{
     const d=document.createElement('button');
@@ -459,8 +481,9 @@ function startCounters() {
   document.getElementById('prevBtn')?.addEventListener('click',()=>goTo(current-1));
   document.getElementById('nextBtn')?.addEventListener('click',()=>goTo(current+1));
   let auto=setInterval(()=>goTo(current+1),4500);
-  track.closest('.testimonials-carousel')?.addEventListener('mouseenter',()=>clearInterval(auto));
-  track.closest('.testimonials-carousel')?.addEventListener('mouseleave',()=>{auto=setInterval(()=>goTo(current+1),4500);});
+  const carousel=track.closest('.testimonials-carousel');
+  carousel?.addEventListener('mouseenter',()=>clearInterval(auto));
+  carousel?.addEventListener('mouseleave',()=>{ auto=setInterval(()=>goTo(current+1),4500); });
 })();
 
 /* ══════════════════════════════════════════════════
@@ -484,10 +507,10 @@ function startCounters() {
   if (!form) return;
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const name=form.name?.value||'', phone=form.phone?.value||'',
-          email=form.email?.value||'', service=form.service?.value||'', msg=form.message?.value||'';
-    const body=encodeURIComponent(`Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nService: ${service}\n\nMessage:\n${msg}`);
-    window.open(`mailto:sbconstruction0001@gmail.com?subject=Quote%20Request%20from%20${encodeURIComponent(name)}&body=${body}`,'_blank');
+    const n=form.name?.value||'', ph=form.phone?.value||'',
+          em=form.email?.value||'', sv=form.service?.value||'', msg=form.message?.value||'';
+    const body=encodeURIComponent(`Name: ${n}\nPhone: ${ph}\nEmail: ${em}\nService: ${sv}\n\nMessage:\n${msg}`);
+    window.open(`mailto:sbconstruction0001@gmail.com?subject=Quote%20Request%20from%20${encodeURIComponent(n)}&body=${body}`,'_blank');
   });
 })();
 
