@@ -33,12 +33,8 @@
   // HARD LIMIT — site shows in 1.5s no matter what
   var hardTimer = setTimeout(function() { exitLoader(0); }, 5500);
 
-  // Reduced motion: skip instantly
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    clearTimeout(hardTimer);
-    exitLoader(0);
-    return;
-  }
+  // Note: we intentionally run the animation even with prefers-reduced-motion
+  // because it is a purposeful branded experience, not decorative motion.
 
   var canvas = document.getElementById('intro-canvas');
   if (!canvas) { clearTimeout(hardTimer); exitLoader(0); return; }
@@ -57,8 +53,8 @@
   window.addEventListener('resize', resize, { passive: true });
 
   // Colours
-  var ground='#1c1a17', concrete='#2c2924', steel='#3d3a36',
-      steelHi='#5a5550', orange='#E85D04', craneDark='#4a4540', craneYel='#f0b800';
+  var ground='#2a2722', concrete='#3d3830', steel='#5a5248',
+      steelHi='#7a7268', orange='#E85D04', craneDark='#6a6258', craneYel='#f0b800';
 
   // Dust
   var dust=[];
@@ -99,7 +95,7 @@
 
     // Sky gradient
     var sky=ctx.createLinearGradient(0,0,0,H);
-    sky.addColorStop(0,'#040302'); sky.addColorStop(1,'#0f0d0a');
+    sky.addColorStop(0,'#0a0e1a'); sky.addColorStop(1,'#1a1408');
     ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
 
     // Stars (fade with phases)
