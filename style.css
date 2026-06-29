@@ -820,12 +820,14 @@ p,li{text-wrap:pretty;max-width:68ch;}
 }
 .intro-curtain-top { top: 0; }
 .intro-curtain-bot { bottom: 0; }
-.intro-curtain-top.exit { transform: translateY(-100%); }
-.intro-curtain-bot.exit { transform: translateY(100%); }
+.intro-curtain-top.exit { transform: translateY(-100%); pointer-events: none; }
+.intro-curtain-bot.exit { transform: translateY(100%); pointer-events: none; }
 #intro-loader.done {
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.55s ease 0.05s;
+  pointer-events: none !important;
+  visibility: hidden;
+  z-index: -1;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
 }
 
 /* ─────────────────────────────────────────────────────────────
