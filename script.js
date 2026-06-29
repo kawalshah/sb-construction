@@ -31,7 +31,7 @@
   if (!loader) { revealHero(); return; }
 
   // HARD LIMIT — site shows in 1.5s no matter what
-  var hardTimer = setTimeout(function() { exitLoader(0); }, 1500);
+  var hardTimer = setTimeout(function() { exitLoader(0); }, 5500);
 
   // Reduced motion: skip instantly
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -86,12 +86,12 @@
   }
 
   // 4 phases × 220ms = 880ms animation
-  var PHASES=4, PHASE_MS=220;
+  var PHASES=6, PHASE_MS=650;
   var phase=0, phaseP=0, lastT=null, raf, animDone=false;
 
   var progressBar = document.querySelector('.intro-progress-bar');
   var phaseLabel  = document.querySelector('.intro-phase-label');
-  var LABELS = ['Laying Foundation…','Raising Steel Frame…','Fitting Glass Facade…','Final Touches…'];
+  var LABELS = ['Laying Foundation…','Pouring Concrete Slab…','Raising Steel Frame…','Installing Glass Facade…','Final Finishing Touches…','Complete.'];
 
   function draw(ph, pp) {
     ctx.clearRect(0,0,W,H);
@@ -117,14 +117,18 @@
 
     var fPad=bW*0.06, slabH=9;
 
-    // Phase 0: Foundation + slab
-    var sf=ph===0?pp:1;
-    ctx.fillStyle='#0b0908'; ctx.fillRect(bX-fPad,gY,bW+fPad*2,20*Math.min(sf*2,1));
-    ctx.fillStyle=concrete;  ctx.fillRect(bX-fPad,gY-slabH,(bW+fPad*2)*sf,slabH);
+    // Phase 0: Excavation trench
+    var ex=ph===0?pp:1;
+    ctx.fillStyle='#0b0908'; ctx.fillRect(bX-fPad,gY,bW+fPad*2,26*Math.min(ex*1.8,1));
     if(ph<1) return;
 
-    // Phase 1: Steel frame
-    var frameF=ph===1?Math.round(fl*pp):fl;
+    // Phase 1: Concrete foundation slab
+    var sf=ph===1?pp:1;
+    ctx.fillStyle=concrete; ctx.fillRect(bX-fPad,gY-slabH,(bW+fPad*2)*sf,slabH);
+    if(ph<2) return;
+
+    // Phase 2: Steel frame
+    var frameF=ph===2?Math.round(fl*pp):fl;
     for(var f=0;f<frameF;f++){
       var fp=ph===1?Math.max(0,Math.min(1,pp*fl-f)):1;
       ctx.fillStyle=steel;
@@ -140,10 +144,10 @@
       ctx.beginPath(); ctx.moveTo(bX+bW-7,fy); ctx.lineTo(bX+bW/2,fy-fH); ctx.stroke();
     }
     ctx.setLineDash([]);
-    if(ph<2) return;
+    if(ph<3) return;
 
-    // Phase 2: Glass panels
-    var totalP=fl*4, drawnP=ph===2?Math.round(totalP*pp):totalP;
+    // Phase 3: Glass panels
+    var totalP=fl*4, drawnP=ph===3?Math.round(totalP*pp):totalP;
     var panW=(bW-12)/4;
     for(var i=0;i<drawnP&&i<totalP;i++){
       var pf=Math.floor(i/4), pp2=i%4;
@@ -157,11 +161,11 @@
     }
     ctx.strokeStyle=steelHi; ctx.lineWidth=1.5;
     ctx.strokeRect(bX, gY-slabH-bH, bW, bH);
-    if(ph<3) return;
+    if(ph<4) return;
 
-    // Phase 3: Finishing
-    var fp3=ph===3?pp:1;
-    ctx.fillStyle='rgba(232,93,4,'+(0.8*fp3)+')';
+    // Phase 4: Finishing
+    var fp4=ph===4?pp:1; var fp3=fp4;
+    ctx.fillStyle='rgba(232,93,4,'+(0.8*fp4)+")";
     ctx.fillRect(bX, gY-slabH-bH*0.5, 5, bH*0.5*fp3);
     ctx.fillRect(bX+bW-5, gY-slabH-bH*0.5, 5, bH*0.5*fp3);
     ctx.fillStyle=concrete; ctx.fillRect(bX-4,gY-slabH-bH-7,(bW+8)*fp3,7);
@@ -173,8 +177,21 @@
       ctx.fillStyle=grd2; ctx.fillRect(bX-bW*0.12,fy,bW*1.24,fH);
     }
     var bg=ctx.createRadialGradient(W/2,gY,0,W/2,gY,W*0.42);
-    bg.addColorStop(0,'rgba(232,93,4,'+(0.16*fp3)+')'); bg.addColorStop(1,'rgba(0,0,0,0)');
+    bg.addColorStop(0,'rgba(232,93,4,'+(0.16*fp4)+')'); bg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=bg; ctx.fillRect(0,gY-45,W,80);
+    if(ph<5) return;
+
+    // Phase 5: Full ambient glow
+    var fp5=pp;
+    var hGlow=ctx.createRadialGradient(W/2,gY-slabH-bH/2,0,W/2,gY-slabH-bH/2,bW*0.95);
+    hGlow.addColorStop(0,'rgba(232,93,4,'+(0.14*fp5)+')'); hGlow.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=hGlow; ctx.fillRect(bX-bW*0.7,gY-slabH-bH-20,bW*2.4,bH+20);
+    // Shimmer on glass
+    for(var f=0;f<fl;f++){
+      var fy2=gY-slabH-(f+1)*fH+fH*0.15;
+      ctx.fillStyle='rgba(255,255,255,'+(0.03*fp5)+')';
+      ctx.fillRect(bX+6,fy2+4,(bW-14)*fp5,fH*0.6);
+    }
   }
 
   function drawCrane() {
@@ -203,9 +220,9 @@
       phaseP+=dt/PHASE_MS;
       if(phaseP>=1){
         phaseP=0; phase++;
-        if(phase>=1&&phase<=3){
+        if(phase>=1&&phase<=5){
           var m=getM();
-          spawnDust(m.bX+m.bW/2, m.gY-m.fH*phase, 10);
+          spawnDust(m.bX+m.bW/2, m.gY-m.fH*(phase<fl?phase:fl-1), 10);
         }
       }
       var gP=Math.min((phase+phaseP)/PHASES,1);
@@ -229,21 +246,21 @@
     animDone=true;
     clearTimeout(hardTimer);
     cancelAnimationFrame(raf);
-    try { draw(3,1); drawCrane(); } catch(e){}
+    try { draw(5,1); drawCrane(); } catch(e){}
     if(progressBar) progressBar.style.width='100%';
     if(phaseLabel) phaseLabel.textContent='Complete.';
     // Logo flash
     var logo=document.querySelector('.intro-final-logo');
-    if(logo) setTimeout(function(){logo.classList.add('visible');},120);
+    if(logo) setTimeout(function(){logo.classList.add('visible');},300);
     // Curtain rip
     setTimeout(function(){
       var ct=document.getElementById('introCurtainTop');
       var cb=document.getElementById('introCurtainBot');
       if(ct) ct.classList.add('exit');
       if(cb) cb.classList.add('exit');
-    }, 500);
+    }, 800);
     // Exit
-    exitLoader(800);
+    exitLoader(1100);
   }
 
   function revealHero() {
