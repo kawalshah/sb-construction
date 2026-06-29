@@ -67,16 +67,25 @@
   drawParticles();
 
   // ── TIMELINE ──
-  // t=0ms  → logo appears
-  // t=300ms → glow erupts
-  // t=500ms → diagonal lines sweep
-  // t=1400ms → curtains rip open to reveal site
-  // t=2250ms → hero elements animate in
+  // t=50ms   → logo fades up
+  // t=300ms  → orange glow erupts
+  // t=500ms  → diagonal lines sweep
+  // t=1100ms → hero image starts fading in behind curtains
+  // t=1350ms → curtains rip apart (revealing already-faded-in image)
+  // t=2000ms → loader fades out
+  // t=2100ms → hero text / elements animate in staggered
+  // t=2300ms → nav bar fades in
 
   requestAnimationFrame(() => {
     setTimeout(() => { logo.classList.add('visible'); }, 50);
     setTimeout(() => { glow.classList.add('active'); }, 300);
     setTimeout(() => { lines.classList.add('active'); }, 500);
+
+    // Fade in hero image BEFORE curtain opens so it's ready
+    setTimeout(() => {
+      const heroMedia = document.querySelector('.hero-media');
+      if (heroMedia) heroMedia.classList.add('reveal');
+    }, 1100);
 
     // Curtain rip
     setTimeout(() => {
@@ -84,14 +93,23 @@
       curtainBot.classList.add('exit');
     }, 1350);
 
-    // Hide loader entirely after curtain exits
+    // Fade out loader (overlaps curtain exit for seamless blend)
     setTimeout(() => {
       loader.classList.add('done');
       loaderDone = true;
       cancelAnimationFrame(raf);
-      // Trigger hero elements
+    }, 2000);
+
+    // Hero text elements stagger in
+    setTimeout(() => {
       triggerHeroAnimations();
-    }, 2150);
+    }, 2100);
+
+    // Nav fades in last
+    setTimeout(() => {
+      const nav = document.getElementById('site-header');
+      if (nav) nav.classList.add('reveal');
+    }, 2300);
   });
 })();
 
@@ -138,7 +156,7 @@ function triggerHeroAnimations() {
   }
   for (let i = 0; i < NUM; i++) particles.push(new Particle());
 
-  // Start particles after intro
+  // Start particles after intro fully settles
   setTimeout(() => {
     function draw() {
       ctx.clearRect(0, 0, W, H);
