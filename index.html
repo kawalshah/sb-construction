@@ -12,6 +12,73 @@
 
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700,800,900&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Preconnect to font CDN to stop render-blocking -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+
+  <!-- SEO: canonical + robots -->
+  <link rel="canonical" href="https://sb-construction-eight.vercel.app/" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Open Graph: social preview image -->
+  <meta property="og:image" content="https://sb-construction-eight.vercel.app/sb_hero.png" />
+  <meta property="og:url" content="https://sb-construction-eight.vercel.app/" />
+  <meta property="og:image:width" content="1536" />
+  <meta property="og:image:height" content="1024" />
+
+  <!-- Schema.org: LocalBusiness structured data for Perth local search -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "SB Construction",
+    "alternateName": "Sandhu Brothers Construction",
+    "description": "Professional building maintenance, landscaping, painting, concrete, decking, fencing and more across Perth, WA.",
+    "url": "https://sb-construction-eight.vercel.app",
+    "telephone": "+61497579997",
+    "email": "sbconstruction0001@gmail.com",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Perth",
+      "addressRegion": "WA",
+      "postalCode": "6000",
+      "addressCountry": "AU"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -31.9505,
+      "longitude": 115.8605
+    },
+    "areaServed": [
+      "Perth", "Joondalup", "Wanneroo", "Stirling", "Morley", "Midland",
+      "Armadale", "Rockingham", "Mandurah", "Fremantle", "Cockburn",
+      "Canning Vale", "Gosnells", "Ellenbrook", "Swan", "Subiaco",
+      "Cottesloe", "Scarborough"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Construction & Trade Services",
+      "itemListElement": [
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Building Maintenance & Renovation"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Artificial Grass Installation"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Concrete Driveways & Pathways"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Retaining Walls"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Decking"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Fencing"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Exterior & Interior Painting"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Garage Epoxy Flooring"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Roof Painting"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Garden Maintenance"}},
+        {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Pressure Washing"}}
+      ]
+    },
+    "priceRange": "$$",
+    "openingHours": "Mo-Sa 07:00-17:00",
+    "sameAs": [
+      "https://github.com/kawalshah/sb-construction"
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -75,7 +142,12 @@
 
     <!-- Full-bleed background image -->
     <div class="hero-media" id="heroParallax">
-      <img src="sb_hero.png" alt="Sandhu Brothers at a construction site at sunset" class="hero-img" id="heroImg" />
+      <picture>
+        <source srcset="sb_hero.webp" type="image/webp" />
+        <img src="sb_hero.png" alt="Sandhu Brothers at a construction site at sunset"
+             class="hero-img" id="heroImg"
+             fetchpriority="high" decoding="async" />
+      </picture>
       <div class="hero-overlay"></div>
       <div class="hero-grain"></div>
     </div>
@@ -85,7 +157,10 @@
 
     <!-- Floating image card (like the 3D object in the reference) -->
     <div class="hero-float-card" id="heroFloatCard" aria-hidden="true">
-      <img src="svc_banner_building.png" alt="" />
+      <picture>
+        <source srcset="svc_banner_building.webp" type="image/webp" />
+        <img src="svc_banner_building.png" alt="" loading="lazy" decoding="async" />
+      </picture>
       <div class="hero-float-card-label">
         <span class="hfc-tag">Perth, WA</span>
         <span class="hfc-title">Est. 2019</span>
@@ -185,9 +260,9 @@
     <div class="sticky-scroll-inner">
       <div class="sticky-scroll-left">
         <div class="sticky-img-wrap" id="stickyImgWrap">
-          <img src="sb_garden.png" alt="Landscaping" class="sticky-img active" data-index="0" />
-          <img src="sb_concrete_deck.png" alt="Concrete & Decking" class="sticky-img" data-index="1" />
-          <img src="sb_painting.png" alt="Painting" class="sticky-img" data-index="2" />
+          <img src="sb_garden.png" alt="Landscaping" class="sticky-img active" loading="lazy" decoding="async" data-index="0" />
+          <img src="sb_concrete_deck.png" alt="Concrete & Decking" class="sticky-img" loading="lazy" decoding="async" data-index="1" />
+          <img src="sb_painting.png" alt="Painting" class="sticky-img" loading="lazy" decoding="async" data-index="2" />
         </div>
       </div>
       <div class="sticky-scroll-right">
@@ -219,9 +294,15 @@
     <div class="about-inner container">
       <div class="about-image-col reveal-left">
         <div class="about-img-stack">
-          <img src="sb_hero.png" alt="SB Construction team on site" class="about-img-main" />
+          <picture>
+          <source srcset="sb_hero.webp" type="image/webp" />
+          <img src="sb_hero.png" alt="SB Construction team on site" class="about-img-main" loading="lazy" decoding="async" />
+        </picture>
           <div class="about-img-badge">
-            <img src="logo.png" alt="SB Construction logo" />
+            <picture>
+              <source srcset="logo.webp" type="image/webp" />
+              <img src="logo.png" alt="SB Construction logo" loading="lazy" decoding="async" />
+            </picture>
           </div>
           <!-- Floating stat card -->
           <div class="about-stat-pill">
@@ -408,8 +489,8 @@
         <p class="section-sub centered">Drag the slider to reveal the transformation.</p>
       </div>
       <div class="ba-slider reveal-up" id="baSlider">
-        <div class="ba-after"><img src="sb_after.png" alt="After renovation" /></div>
-        <div class="ba-before"><img src="sb_before.png" alt="Before renovation" /></div>
+        <div class="ba-after"><picture><source srcset="sb_after.webp" type="image/webp" /><img src="sb_after.png" alt="After renovation" loading="lazy" decoding="async" /></picture></div>
+        <div class="ba-before"><picture><source srcset="sb_before.webp" type="image/webp" /><img src="sb_before.png" alt="Before renovation" loading="lazy" decoding="async" /></picture></div>
         <div class="ba-handle" id="baHandle">
           <div class="ba-handle-line"></div>
           <div class="ba-handle-circle">
@@ -435,13 +516,13 @@
     </div>
     <div class="gallery-track-wrap" id="galleryWrap">
       <div class="gallery-track" id="galleryTrack">
-        <div class="gallery-card"><img src="sb_garden.png" alt="Landscaped garden" /><div class="gallery-card-label">Landscaping</div></div>
-        <div class="gallery-card"><img src="sb_concrete_deck.png" alt="Concrete and decking" /><div class="gallery-card-label">Concrete & Decking</div></div>
-        <div class="gallery-card"><img src="sb_epoxy.png" alt="Epoxy garage floor" /><div class="gallery-card-label">Garage Epoxy</div></div>
-        <div class="gallery-card"><img src="sb_fencing.png" alt="Fencing and retaining wall" /><div class="gallery-card-label">Fencing & Walls</div></div>
-        <div class="gallery-card"><img src="sb_interior.png" alt="Interior painting" /><div class="gallery-card-label">Interior Painting</div></div>
-        <div class="gallery-card"><img src="sb_painting.png" alt="Exterior painting" /><div class="gallery-card-label">Exterior Painting</div></div>
-        <div class="gallery-card"><img src="sb_after.png" alt="Garden transformation" /><div class="gallery-card-label">Garden Transformation</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_garden.webp" type="image/webp" /><img src="sb_garden.png" alt="Landscaped garden" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Landscaping</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_concrete_deck.webp" type="image/webp" /><img src="sb_concrete_deck.png" alt="Concrete and decking" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Concrete & Decking</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_epoxy.webp" type="image/webp" /><img src="sb_epoxy.png" alt="Epoxy garage floor" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Garage Epoxy</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_fencing.webp" type="image/webp" /><img src="sb_fencing.png" alt="Fencing and retaining wall" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Fencing & Walls</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_interior.webp" type="image/webp" /><img src="sb_interior.png" alt="Interior painting" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Interior Painting</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_painting.webp" type="image/webp" /><img src="sb_painting.png" alt="Exterior painting" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Exterior Painting</div></div>
+        <div class="gallery-card"><picture><source srcset="sb_after.webp" type="image/webp" /><img src="sb_after.png" alt="Garden transformation" loading="lazy" decoding="async" /></picture><div class="gallery-card-label">Garden Transformation</div></div>
       </div>
     </div>
   </section>

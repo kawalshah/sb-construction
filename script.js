@@ -528,3 +528,34 @@ document.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(link =>
     floatCard.style.transform = '';
   });
 })();
+
+/* ── WEBP BACKGROUND IMAGE SWAP ── */
+/* Upgrades all inline style="background-image: url('*.png')" to .webp if browser supports it */
+(function() {
+  var canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 1;
+  canvas.toDataURL('image/webp').indexOf('image/webp') > -1
+    ? document.documentElement.classList.add('webp-support')
+    : null;
+  
+  if (document.documentElement.classList.contains('webp-support')) {
+    // Swap all inline background-image PNG → WebP
+    document.querySelectorAll('[style*=".png"]').forEach(function(el) {
+      el.style.backgroundImage = el.style.backgroundImage.replace(/\.png/g, '.webp');
+    });
+    // Also swap data-loaded ones on scroll via MutationObserver
+    var obs = new MutationObserver(function(muts) {
+      muts.forEach(function(m) {
+        if (m.type === 'attributes' && m.attributeName === 'style') {
+          var el = m.target;
+          if (el.style.backgroundImage && el.style.backgroundImage.includes('.png')) {
+            el.style.backgroundImage = el.style.backgroundImage.replace(/\.png/g, '.webp');
+          }
+        }
+      });
+    });
+    document.querySelectorAll('[style*="background-image"]').forEach(function(el) {
+      obs.observe(el, { attributes: true });
+    });
+  }
+})();

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://sb-construction-eight.vercel.app/sitemap.xml
