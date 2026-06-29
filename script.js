@@ -222,7 +222,7 @@
         phaseP=0; phase++;
         if(phase>=1&&phase<=5){
           var m=getM();
-          spawnDust(m.bX+m.bW/2, m.gY-m.fH*(phase<fl?phase:fl-1), 10);
+          spawnDust(m.bX+m.bW/2, m.gY-m.fH*(phase<m.fl?phase:m.fl-1), 10);
         }
       }
       var gP=Math.min((phase+phaseP)/PHASES,1);
@@ -239,7 +239,11 @@
       exitLoader(0);
     }
   }
-  raf=requestAnimationFrame(animate);
+  // Double-rAF: wait for first paint so dimensions are guaranteed
+  requestAnimationFrame(function() {
+    resize(); // re-measure after layout
+    raf = requestAnimationFrame(animate);
+  });
 
   function finish() {
     if(animDone) return;
