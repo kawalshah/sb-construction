@@ -743,27 +743,31 @@ p,li{text-wrap:pretty;max-width:68ch;}
 
 /* ─────────────────────────────────────────────────────────────
    CINEMATIC INTRO — CSS BUILDING ANIMATION (Safari-safe)
+   No canvas. Pure CSS @keyframes. Works on all browsers.
+   Timing: floors rise over 4s total, then logo, then curtain.
 ───────────────────────────────────────────────────────────────*/
+
+/* ── Loader overlay ── */
 #intro-loader {
   position: fixed;
   inset: 0;
   z-index: 9999;
   background: #07080f;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   pointer-events: none;
 }
+
+/* ── Scene ── */
 .intro-scene {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding-bottom: 18%;
+  padding-bottom: 20%;
 }
+
+/* ── Stars ── */
 .intro-stars { position: absolute; inset: 0; pointer-events: none; }
 .intro-stars span {
   position: absolute;
@@ -771,193 +775,214 @@ p,li{text-wrap:pretty;max-width:68ch;}
   border-radius: 50%;
   background: #fff;
   opacity: 0;
-  animation: star-fade 0.6s ease forwards;
+  animation: intro-star-fade 0.8s ease both;
 }
-.intro-stars span:nth-child(1)  { top:8%;  left:12%; animation-delay:0.1s; }
-.intro-stars span:nth-child(2)  { top:14%; left:28%; animation-delay:0.2s; }
-.intro-stars span:nth-child(3)  { top:6%;  left:45%; animation-delay:0.15s; }
-.intro-stars span:nth-child(4)  { top:18%; left:62%; animation-delay:0.25s; }
-.intro-stars span:nth-child(5)  { top:9%;  left:78%; animation-delay:0.1s; }
-.intro-stars span:nth-child(6)  { top:24%; left:18%; animation-delay:0.3s; }
-.intro-stars span:nth-child(7)  { top:30%; left:35%; animation-delay:0.2s; }
-.intro-stars span:nth-child(8)  { top:22%; left:55%; animation-delay:0.35s; }
-.intro-stars span:nth-child(9)  { top:15%; left:72%; animation-delay:0.15s; }
-.intro-stars span:nth-child(10) { top:28%; left:88%; animation-delay:0.28s; }
-.intro-stars span:nth-child(11) { top:5%;  left:5%;  animation-delay:0.22s; }
-.intro-stars span:nth-child(12) { top:32%; left:8%;  animation-delay:0.18s; }
-.intro-stars span:nth-child(13) { top:12%; left:92%; animation-delay:0.32s; }
-.intro-stars span:nth-child(14) { top:26%; left:48%; animation-delay:0.12s; }
-.intro-stars span:nth-child(15) { top:20%; left:82%; animation-delay:0.26s; }
-@keyframes star-fade { to { opacity: 0.55; } }
+.intro-stars span:nth-child(1)  { top:7%;  left:11%; animation-delay:0.05s; }
+.intro-stars span:nth-child(2)  { top:13%; left:27%; animation-delay:0.12s; }
+.intro-stars span:nth-child(3)  { top:5%;  left:44%; animation-delay:0.08s; }
+.intro-stars span:nth-child(4)  { top:17%; left:61%; animation-delay:0.16s; }
+.intro-stars span:nth-child(5)  { top:8%;  left:77%; animation-delay:0.06s; }
+.intro-stars span:nth-child(6)  { top:23%; left:17%; animation-delay:0.18s; }
+.intro-stars span:nth-child(7)  { top:29%; left:34%; animation-delay:0.1s; }
+.intro-stars span:nth-child(8)  { top:21%; left:54%; animation-delay:0.2s; }
+.intro-stars span:nth-child(9)  { top:14%; left:71%; animation-delay:0.09s; }
+.intro-stars span:nth-child(10) { top:27%; left:87%; animation-delay:0.15s; }
+.intro-stars span:nth-child(11) { top:4%;  left:4%;  animation-delay:0.13s; }
+.intro-stars span:nth-child(12) { top:31%; left:7%;  animation-delay:0.07s; }
+.intro-stars span:nth-child(13) { top:11%; left:91%; animation-delay:0.19s; }
+.intro-stars span:nth-child(14) { top:25%; left:47%; animation-delay:0.11s; }
+.intro-stars span:nth-child(15) { top:19%; left:81%; animation-delay:0.14s; }
+@keyframes intro-star-fade { to { opacity: 0.6; } }
 
+/* ── Ground line ── */
 .intro-ground {
   position: absolute;
-  bottom: 17%;
+  bottom: 19%;
   left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(90,82,72,0.6) 20%, rgba(90,82,72,0.6) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(90,82,72,0.7) 20%, rgba(90,82,72,0.7) 80%, transparent);
   opacity: 0;
   transform: scaleX(0);
-  animation: ground-in 0.4s 0.2s ease forwards;
+  transform-origin: center;
+  animation: intro-ground-in 0.5s 0.1s cubic-bezier(0.22,1,0.36,1) both;
 }
-@keyframes ground-in { to { opacity: 1; transform: scaleX(1); } }
+@keyframes intro-ground-in { to { opacity: 1; transform: scaleX(1); } }
 
+/* ── Building wrapper ── */
 .intro-building {
   position: relative;
-  width: min(160px, 38vw);
+  width: min(180px, 42vw);
   display: flex;
   flex-direction: column-reverse;
   align-items: stretch;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
+
+/* ── Floors — each rises from ground, staggered ── */
+/* Floor timing: start at 0.3s, each floor takes 0.55s, gap 0.6s between floors */
 .intro-floor {
-  height: clamp(28px, 7vw, 44px);
-  background: linear-gradient(180deg, #4a4540 0%, #3a3530 50%, #2e2924 100%);
-  border-left: 3px solid #5a5248;
-  border-right: 3px solid #5a5248;
-  border-top: 2px solid #6a6258;
+  height: clamp(30px, 8vw, 48px);
+  background: linear-gradient(180deg, #4e4a45 0%, #3e3a35 50%, #2e2a25 100%);
+  border-left: 3px solid #6a6258;
+  border-right: 3px solid #6a6258;
+  border-top: 2px solid #7a7268;
   position: relative;
   transform-origin: bottom center;
   transform: scaleY(0);
   opacity: 0;
-  animation: floor-rise 0.32s cubic-bezier(0.22,1,0.36,1) forwards;
-  animation-delay: calc(0.5s + var(--fi) * 0.38s);
+  animation: intro-floor-rise 0.55s cubic-bezier(0.22,1,0.36,1) both;
+  animation-delay: calc(0.3s + var(--fi) * 0.6s);
 }
-@keyframes floor-rise {
-  0%   { transform: scaleY(0); opacity: 1; }
-  60%  { transform: scaleY(1.06); }
-  100% { transform: scaleY(1); opacity: 1; }
+@keyframes intro-floor-rise {
+  0%  { transform: scaleY(0); opacity: 1; }
+  65% { transform: scaleY(1.05); }
+  100%{ transform: scaleY(1); opacity: 1; }
 }
+
+/* ── Windows light up after floor appears ── */
 .intro-windows {
   position: absolute;
-  inset: 5px 6px;
+  inset: 6px 7px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
 }
 .intro-windows span {
-  background: rgba(70,130,190,0.18);
-  border: 1px solid rgba(130,195,255,0.22);
+  background: rgba(70,130,190,0.15);
+  border: 1px solid rgba(130,195,255,0.2);
   border-radius: 1px;
   opacity: 0;
-  animation: win-in 0.25s ease forwards;
-  animation-delay: calc(0.72s + var(--fi) * 0.38s);
+  animation: intro-win-in 0.3s ease both;
+  animation-delay: calc(0.55s + var(--fi) * 0.6s);
 }
-@keyframes win-in {
-  from { opacity: 0; background: rgba(255,200,100,0.5); }
+@keyframes intro-win-in {
+  from { opacity: 0; background: rgba(255,210,120,0.6); }
   to   { opacity: 1; background: rgba(70,130,190,0.18); }
 }
+
+/* ── Roof cap ── */
 .intro-roof {
   height: 5px;
-  background: #7a7268;
+  background: #8a8278;
   border-radius: 2px 2px 0 0;
   transform: scaleX(0);
+  transform-origin: left;
   opacity: 0;
-  animation: roof-in 0.3s cubic-bezier(0.22,1,0.36,1) forwards;
-  animation-delay: calc(0.5s + 5 * 0.38s + 0.1s);
+  animation: intro-roof-in 0.4s cubic-bezier(0.22,1,0.36,1) both;
+  animation-delay: calc(0.3s + 5 * 0.6s);
 }
-@keyframes roof-in { to { transform: scaleX(1); opacity: 1; } }
+@keyframes intro-roof-in { to { transform: scaleX(1); opacity: 1; } }
 
+/* ── Crane ── */
 .intro-crane {
   position: absolute;
-  bottom: 17%;
-  left: calc(50% + min(80px,19vw) + 4px);
-  opacity: 0;
-  animation: crane-appear 0.3s 0.6s ease forwards;
+  bottom: 19%;
+  left: calc(50% + min(92px, 22vw) + 2px);
 }
-@keyframes crane-appear { to { opacity: 1; } }
 .intro-crane-mast {
   position: absolute;
   bottom: 0; left: 0;
-  width: 6px; height: 0;
+  width: 7px; height: 0;
   background: #6a6258;
-  border-radius: 2px;
+  border-radius: 3px 3px 0 0;
   transform-origin: bottom;
-  animation: mast-grow 0.5s 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+  animation: intro-mast-grow 0.7s 0.4s cubic-bezier(0.22,1,0.36,1) both;
 }
-@keyframes mast-grow { to { height: clamp(120px, 30vw, 190px); } }
+@keyframes intro-mast-grow { to { height: clamp(130px, 32vw, 210px); } }
+
 .intro-crane-jib {
   position: absolute;
-  bottom: clamp(120px, 30vw, 190px);
+  bottom: clamp(130px, 32vw, 210px);
   left: 3px;
-  height: 5px; width: 0;
+  height: 6px; width: 0;
   background: #E85D04;
   transform-origin: left;
-  border-radius: 0 2px 2px 0;
-  animation: jib-grow 0.4s 1.2s cubic-bezier(0.22,1,0.36,1) forwards;
+  border-radius: 0 3px 3px 0;
+  animation: intro-jib-grow 0.5s 1.1s cubic-bezier(0.22,1,0.36,1) both;
 }
-@keyframes jib-grow { to { width: clamp(50px, 14vw, 90px); } }
+@keyframes intro-jib-grow { to { width: clamp(55px, 15vw, 95px); } }
+
 .intro-crane-cab {
   position: absolute;
-  bottom: clamp(118px, 30vw, 188px);
-  left: -1px;
-  width: 10px; height: 10px;
+  bottom: clamp(127px, 32vw, 207px);
+  left: -2px;
+  width: 12px; height: 12px;
   background: #E85D04;
   border-radius: 2px;
   opacity: 0;
-  animation: cab-in 0.2s 1.25s ease forwards;
+  animation: intro-cab-in 0.2s 1.15s ease both;
 }
-@keyframes cab-in { to { opacity: 1; } }
+@keyframes intro-cab-in { to { opacity: 1; } }
+
 .intro-crane-hook {
   position: absolute;
-  bottom: clamp(80px, 20vw, 130px);
-  left: clamp(35px, 9vw, 60px);
-  width: 2px; height: 18px;
-  background: rgba(255,200,80,0.7);
-  opacity: 0;
+  bottom: clamp(90px, 22vw, 145px);
+  left: clamp(38px, 10vw, 65px);
+  width: 2px; height: 20px;
+  background: rgba(255,200,80,0.8);
   transform-origin: top center;
-  animation: hook-in 0.3s 1.6s ease forwards, hook-swing 2.2s 1.9s ease-in-out infinite;
+  opacity: 0;
+  animation:
+    intro-hook-in   0.3s 1.65s ease both,
+    intro-hook-swing 3s  2s ease-in-out infinite;
 }
-@keyframes hook-in { to { opacity: 1; } }
-@keyframes hook-swing {
-  0%,100% { transform: rotate(-8deg); }
-  50%      { transform: rotate(8deg); }
+@keyframes intro-hook-in   { to { opacity: 1; } }
+@keyframes intro-hook-swing {
+  0%,100% { transform: rotate(-10deg); }
+  50%     { transform: rotate(10deg); }
 }
 
+/* ── Orange ground glow ── */
 .intro-glow {
   position: absolute;
-  bottom: 16%;
+  bottom: 18%;
   left: 50%;
   transform: translateX(-50%);
-  width: min(260px, 65vw);
-  height: 80px;
-  background: radial-gradient(ellipse at center bottom, rgba(232,93,4,0.25) 0%, transparent 70%);
+  width: min(280px, 70vw);
+  height: 90px;
+  background: radial-gradient(ellipse at center bottom, rgba(232,93,4,0.3) 0%, transparent 70%);
   opacity: 0;
   pointer-events: none;
-  animation: glow-in 1s 1.5s ease forwards;
+  animation: intro-glow-in 1.2s 1.8s ease both;
 }
-@keyframes glow-in { to { opacity: 1; } }
+@keyframes intro-glow-in { to { opacity: 1; } }
 
+/* ── Progress bar ── */
 .intro-progress-wrap {
   position: absolute;
   bottom: 0; left: 0; right: 0;
-  height: 2px;
-  background: rgba(255,255,255,0.06);
+  height: 3px;
+  background: rgba(255,255,255,0.07);
   z-index: 3;
 }
 .intro-progress-bar {
   height: 100%;
   width: 0%;
   background: #E85D04;
-  transition: width 0.25s linear;
+  transition: width 0.4s ease;
 }
+
+/* ── Phase label ── */
 .intro-phase-label {
   position: absolute;
-  bottom: 14px;
+  bottom: 18px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'Satoshi', sans-serif;
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(232,93,4,0.7);
+  color: rgba(232,93,4,0.8);
   z-index: 3;
   white-space: nowrap;
+  transition: opacity 0.3s ease;
 }
+
+/* ── Final logo ── */
 .intro-final-logo {
   position: absolute;
   top: 50%; left: 50%;
-  transform: translate(-50%, -50%) scale(0.88);
+  transform: translate(-50%, -50%) scale(0.9);
   opacity: 0;
   transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1);
   z-index: 4;
@@ -970,13 +995,15 @@ p,li{text-wrap:pretty;max-width:68ch;}
 }
 .intro-final-logo svg { display: block; margin: 0 auto 10px; }
 .intro-final-logo-name {
-  font-family: 'Clash Display', sans-serif;
-  font-size: 12px;
+  font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.32em;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.85);
   text-transform: uppercase;
 }
+
+/* ── Curtains ── */
 .intro-curtain-top,
 .intro-curtain-bot {
   position: absolute;
@@ -984,18 +1011,21 @@ p,li{text-wrap:pretty;max-width:68ch;}
   height: 50%;
   background: #07080f;
   z-index: 5;
-  transition: transform 0.9s cubic-bezier(0.76,0,0.24,1);
+  transition: transform 0.85s cubic-bezier(0.76,0,0.24,1);
+  pointer-events: none;
 }
 .intro-curtain-top { top: 0; }
 .intro-curtain-bot { bottom: 0; }
-.intro-curtain-top.exit { transform: translateY(-100%); pointer-events: none; }
-.intro-curtain-bot.exit { transform: translateY(100%); pointer-events: none; }
+.intro-curtain-top.exit { transform: translateY(-100%); }
+.intro-curtain-bot.exit { transform: translateY(100%); }
+
+/* ── Done state ── */
 #intro-loader.done {
   opacity: 0;
   pointer-events: none !important;
   visibility: hidden;
   z-index: -1;
-  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+  transition: opacity 0.55s ease, visibility 0s linear 0.55s;
 }
 
 /* ─────────────────────────────────────────────────────────────

@@ -1,31 +1,46 @@
-// SB CONSTRUCTION – v5.0
+// SB CONSTRUCTION – v5.1
 
-/* ══════════════════════════════════════════════════
-   INTRO — CSS BUILDING ANIMATION (Safari-safe)
-   Pure CSS handles visuals. JS only drives labels + exit.
-   Total: ~3.5s animation, then curtain rip, then site.
-══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   INTRO — CSS BUILDING ANIMATION
+   CSS timing:
+     Floor 0: delay 0.3s  → done ~0.85s
+     Floor 1: delay 0.9s  → done ~1.45s
+     Floor 2: delay 1.5s  → done ~2.05s
+     Floor 3: delay 2.1s  → done ~2.65s
+     Floor 4: delay 2.7s  → done ~3.25s
+     Roof:    delay 3.3s  → done ~3.7s
+   Logo flash: 3.9s
+   Curtain rip: 4.3s
+   Site reveal: 5.0s
+   Hard timeout: 5.5s
+══════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
-  var loader  = document.getElementById('intro-loader');
+  var loader    = document.getElementById('intro-loader');
   var heroMedia = document.querySelector('.hero-media');
+  // Hero renders behind loader immediately — no delay
   if (heroMedia) heroMedia.classList.add('reveal');
   if (!loader) { revealHero(); return; }
 
+  var exited = false;
   function exitLoader(delay) {
+    if (exited) return;
+    exited = true;
     setTimeout(function () {
       loader.classList.add('done');
       setTimeout(function () {
-        loader.style.display = 'none';
+        loader.style.display    = 'none';
         loader.style.visibility = 'hidden';
-      }, 600);
+        loader.style.zIndex     = '-1';
+      }, 650);
       revealHero();
     }, delay || 0);
   }
 
-  // Phase labels driven by JS timers (CSS handles drawing)
-  var PHASES = [
+  // ── Phase labels & progress bar ──────────────────────────────
+  // Sync with CSS: 5 floors, each 0.6s apart, starting at 0.3s
+  var LABELS = [
     'Laying Foundation…',
     'Pouring Concrete Slab…',
     'Raising Steel Frame…',
@@ -36,35 +51,35 @@
   var label = document.getElementById('introPhaseLabel');
   var bar   = document.getElementById('introProgressBar');
   var logo  = document.getElementById('introFinalLogo');
-  var PHASE_MS = 380; // matches CSS --fi delay steps (0.38s per floor)
 
-  PHASES.forEach(function (text, i) {
+  LABELS.forEach(function (text, i) {
+    // Match CSS floor delay: 0.3s + i * 0.6s
     setTimeout(function () {
       if (label) label.textContent = text;
-      if (bar) bar.style.width = ((i + 1) / PHASES.length * 100) + '%';
-    }, 500 + i * PHASE_MS);
+      if (bar)   bar.style.width   = ((i + 1) / LABELS.length * 100) + '%';
+    }, 300 + i * 600);
   });
 
-  // Logo flash
-  var totalAnim = 500 + PHASES.length * PHASE_MS + 200; // ~2.8s
+  // ── Logo flash after building is complete ────────────────────
   setTimeout(function () {
     if (logo) logo.classList.add('visible');
-  }, totalAnim);
+  }, 3900);
 
-  // Curtain rip
+  // ── Curtain rip ──────────────────────────────────────────────
   setTimeout(function () {
     var ct = document.getElementById('introCurtainTop');
     var cb = document.getElementById('introCurtainBot');
     if (ct) ct.classList.add('exit');
     if (cb) cb.classList.add('exit');
-  }, totalAnim + 400);
+  }, 4300);
 
-  // Exit
-  exitLoader(totalAnim + 1300);
+  // ── Exit & reveal site ───────────────────────────────────────
+  exitLoader(5000);
 
-  // Absolute hard limit — site always shows in 4s
-  setTimeout(function () { exitLoader(0); }, 4000);
+  // ── Absolute hard limit (never blank for > 5.5s) ─────────────
+  setTimeout(function () { exitLoader(0); }, 5500);
 
+  // ── Hero reveal ──────────────────────────────────────────────
   function revealHero() {
     var lines = document.querySelectorAll('.hbo-line');
     lines.forEach(function (el, i) {
