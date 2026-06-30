@@ -31,7 +31,7 @@
   if (!loader) { revealHero(); return; }
 
   // HARD LIMIT — site shows in 1.5s no matter what
-  var hardTimer = setTimeout(function() { exitLoader(0); }, 5500);
+  var hardTimer = setTimeout(function() { exitLoader(0); }, 1500);
 
   // Note: we intentionally run the animation even with prefers-reduced-motion
   // because it is a purposeful branded experience, not decorative motion.
@@ -90,6 +90,7 @@
   var LABELS = ['Laying Foundation…','Pouring Concrete Slab…','Raising Steel Frame…','Installing Glass Facade…','Final Finishing Touches…','Complete.'];
 
   function draw(ph, pp) {
+    if (!W || !H || W < 10 || H < 10) { resize(); if (!W || !H) return; }
     ctx.clearRect(0,0,W,H);
     var m=getM(), bW=m.bW,bH=m.bH,bX=m.bX,gY=m.gY,fl=m.fl,fH=m.fH;
 
@@ -168,18 +169,18 @@
     // Warm glow
     for(var f=0;f<fl;f++){
       var fy=gY-slabH-(f+1)*fH+fH*0.2;
-      var grd2=ctx.createRadialGradient(bX+bW/2,fy+fH*0.4,0,bX+bW/2,fy+fH*0.4,bW*0.45);
+      var grd2=ctx.createRadialGradient(bX+bW/2,fy+fH*0.4,0,bX+bW/2,fy+fH*0.4,Math.max(1,bW*0.45));
       grd2.addColorStop(0,'rgba(232,93,4,'+(0.07*fp3)+')'); grd2.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle=grd2; ctx.fillRect(bX-bW*0.12,fy,bW*1.24,fH);
     }
-    var bg=ctx.createRadialGradient(W/2,gY,0,W/2,gY,W*0.42);
+    var bg=ctx.createRadialGradient(W/2,gY,0,W/2,gY,Math.max(1,W*0.42));
     bg.addColorStop(0,'rgba(232,93,4,'+(0.16*fp4)+')'); bg.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=bg; ctx.fillRect(0,gY-45,W,80);
     if(ph<5) return;
 
     // Phase 5: Full ambient glow
     var fp5=pp;
-    var hGlow=ctx.createRadialGradient(W/2,gY-slabH-bH/2,0,W/2,gY-slabH-bH/2,bW*0.95);
+    var hGlow=ctx.createRadialGradient(W/2,gY-slabH-bH/2,0,W/2,gY-slabH-bH/2,Math.max(1,bW*0.95));
     hGlow.addColorStop(0,'rgba(232,93,4,'+(0.14*fp5)+')'); hGlow.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=hGlow; ctx.fillRect(bX-bW*0.7,gY-slabH-bH-20,bW*2.4,bH+20);
     // Shimmer on glass
