@@ -1,45 +1,41 @@
-// SB CONSTRUCTION – v5.1
+// SB CONSTRUCTION – v5.2
 
 /* ══════════════════════════════════════════════════════════════
-   INTRO — CSS BUILDING ANIMATION
-   CSS timing:
-     Floor 0: delay 0.3s  → done ~0.85s
-     Floor 1: delay 0.9s  → done ~1.45s
-     Floor 2: delay 1.5s  → done ~2.05s
-     Floor 3: delay 2.1s  → done ~2.65s
-     Floor 4: delay 2.7s  → done ~3.25s
-     Roof:    delay 3.3s  → done ~3.7s
-   Logo flash: 3.9s
-   Curtain rip: 4.3s
-   Site reveal: 5.0s
-   Hard timeout: 5.5s
+   INTRO — CSS BUILDING ANIMATION (Safari-safe, no canvas)
+   Timeline:
+     0ms   — loader visible, CSS animation starts immediately
+     300ms — floor 0 rises
+     900ms — floor 1 rises
+     1500ms — floor 2 rises
+     2100ms — floor 3 rises
+     2700ms — floor 4 rises
+     3300ms — roof appears
+     3600ms — logo fades in
+     4000ms — curtain rips open
+     4900ms — loader removed from DOM
 ══════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
-  var loader    = document.getElementById('intro-loader');
+  var loader = document.getElementById('intro-loader');
+
+  // Reveal hero image behind the loader immediately
   var heroMedia = document.querySelector('.hero-media');
-  // Hero renders behind loader immediately — no delay
   if (heroMedia) heroMedia.classList.add('reveal');
+
+  // If no loader element, just reveal and exit
   if (!loader) { revealHero(); return; }
 
-  var exited = false;
-  function exitLoader(delay) {
-    if (exited) return;
-    exited = true;
-    setTimeout(function () {
-      loader.classList.add('done');
-      setTimeout(function () {
-        loader.style.display    = 'none';
-        loader.style.visibility = 'hidden';
-        loader.style.zIndex     = '-1';
-      }, 650);
-      revealHero();
-    }, delay || 0);
+  // Single exit — removes loader completely, no CSS transition dependency
+  var done = false;
+  function killLoader() {
+    if (done) return;
+    done = true;
+    loader.style.cssText = 'display:none!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;';
+    revealHero();
   }
 
-  // ── Phase labels & progress bar ──────────────────────────────
-  // Sync with CSS: 5 floors, each 0.6s apart, starting at 0.3s
+  // Labels & progress — purely cosmetic, never block exit
   var LABELS = [
     'Laying Foundation…',
     'Pouring Concrete Slab…',
@@ -48,38 +44,37 @@
     'Final Finishing Touches…',
     'Complete.'
   ];
-  var label = document.getElementById('introPhaseLabel');
-  var bar   = document.getElementById('introProgressBar');
-  var logo  = document.getElementById('introFinalLogo');
+  var labelEl = document.getElementById('introPhaseLabel');
+  var barEl   = document.getElementById('introProgressBar');
+  var logoEl  = document.getElementById('introFinalLogo');
 
   LABELS.forEach(function (text, i) {
-    // Match CSS floor delay: 0.3s + i * 0.6s
     setTimeout(function () {
-      if (label) label.textContent = text;
-      if (bar)   bar.style.width   = ((i + 1) / LABELS.length * 100) + '%';
+      if (labelEl) labelEl.textContent = text;
+      if (barEl)   barEl.style.width   = Math.round((i + 1) / LABELS.length * 100) + '%';
     }, 300 + i * 600);
   });
 
-  // ── Logo flash after building is complete ────────────────────
+  // Logo flash
   setTimeout(function () {
-    if (logo) logo.classList.add('visible');
-  }, 3900);
+    if (logoEl) logoEl.classList.add('visible');
+  }, 3600);
 
-  // ── Curtain rip ──────────────────────────────────────────────
+  // Curtain rip
   setTimeout(function () {
     var ct = document.getElementById('introCurtainTop');
     var cb = document.getElementById('introCurtainBot');
     if (ct) ct.classList.add('exit');
     if (cb) cb.classList.add('exit');
-  }, 4300);
+  }, 4000);
 
-  // ── Exit & reveal site ───────────────────────────────────────
-  exitLoader(5000);
+  // Remove loader — fires after curtain animation (~0.85s transition)
+  setTimeout(killLoader, 4900);
 
-  // ── Absolute hard limit (never blank for > 5.5s) ─────────────
-  setTimeout(function () { exitLoader(0); }, 5500);
+  // HARD LIMIT — loader gone by 3s no matter what
+  // (fires if anything above breaks)
+  setTimeout(killLoader, 3000);
 
-  // ── Hero reveal ──────────────────────────────────────────────
   function revealHero() {
     var lines = document.querySelectorAll('.hbo-line');
     lines.forEach(function (el, i) {
@@ -88,20 +83,20 @@
     setTimeout(function () {
       var d = document.getElementById('heroDescriptor');
       if (d) d.classList.add('revealed');
-    }, 280);
+    }, 200);
     setTimeout(function () {
       var l = document.querySelector('.hero-hud-left');
       if (l) l.classList.add('revealed');
-    }, 360);
+    }, 320);
     setTimeout(function () {
       var r = document.querySelector('.hero-hud-right');
       if (r) r.classList.add('revealed');
-    }, 460);
-    setTimeout(startCounters, 520);
+    }, 440);
+    setTimeout(startCounters, 500);
     setTimeout(function () {
       var h = document.getElementById('site-header');
       if (h) { h.classList.add('visible'); h.classList.add('reveal'); }
-    }, 580);
+    }, 560);
   }
 })();
 
