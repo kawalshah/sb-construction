@@ -1,291 +1,92 @@
-// SB CONSTRUCTION – v4.1 (bulletproof)
+// SB CONSTRUCTION – v5.0
 
 /* ══════════════════════════════════════════════════
-   CINEMATIC INTRO — BUILDING CONSTRUCTION ANIMATION
-   6 phases × 650ms = ~4s cinematic build. Hard timeout: 5.5s.
+   INTRO — CSS BUILDING ANIMATION (Safari-safe)
+   Pure CSS handles visuals. JS only drives labels + exit.
+   Total: ~3.5s animation, then curtain rip, then site.
 ══════════════════════════════════════════════════ */
 (function () {
   'use strict';
-  const loader = document.getElementById('intro-loader');
 
-  // Immediately make hero image visible (renders behind loader)
-  const heroMedia = document.querySelector('.hero-media');
+  var loader  = document.getElementById('intro-loader');
+  var heroMedia = document.querySelector('.hero-media');
   if (heroMedia) heroMedia.classList.add('reveal');
-
-  function exitLoader(delay) {
-    delay = delay || 0;
-    setTimeout(function() {
-      if (!loader) { revealHero(); return; }
-      loader.classList.add('done');
-      // Redundant safety: set inline styles directly
-      setTimeout(function() {
-        loader.style.display = 'none';
-        loader.style.visibility = 'hidden';
-        loader.style.pointerEvents = 'none';
-      }, 550);
-      revealHero();
-    }, delay);
-  }
-
-  // No loader? Skip straight to hero.
   if (!loader) { revealHero(); return; }
 
-  // HARD LIMIT — site shows in 1.5s no matter what
-  var hardTimer = setTimeout(function() { exitLoader(0); }, 1500);
-
-  // Note: we intentionally run the animation even with prefers-reduced-motion
-  // because it is a purposeful branded experience, not decorative motion.
-
-  var canvas = document.getElementById('intro-canvas');
-  if (!canvas) { clearTimeout(hardTimer); exitLoader(0); return; }
-
-  var ctx;
-  try { ctx = canvas.getContext('2d'); }
-  catch(e) { clearTimeout(hardTimer); exitLoader(0); return; }
-  if (!ctx) { clearTimeout(hardTimer); exitLoader(0); return; }
-
-  var W, H;
-  function resize() {
-    W = canvas.width  = window.innerWidth  || loader.offsetWidth  || 800;
-    H = canvas.height = window.innerHeight || loader.offsetHeight || 600;
-  }
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  // Colours
-  var ground='#2a2722', concrete='#3d3830', steel='#5a5248',
-      steelHi='#7a7268', orange='#E85D04', craneDark='#6a6258', craneYel='#f0b800';
-
-  // Dust
-  var dust=[];
-  function spawnDust(x,y) {
-    for(var i=0;i<10;i++) {
-      dust.push({x:x,y:y,vx:(Math.random()-0.5)*2.5,vy:-(Math.random()*1.8+0.4),
-        life:0,max:22+Math.random()*22,sz:Math.random()*3+1});
-    }
-  }
-  function tickDust() {
-    for(var i=dust.length-1;i>=0;i--) {
-      var p=dust[i]; p.life++;
-      if(p.life>p.max){dust.splice(i,1);continue;}
-      var a=(1-p.life/p.max)*0.4;
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);
-      ctx.fillStyle='rgba(190,150,90,'+a+')'; ctx.fill();
-      p.x+=p.vx; p.y+=p.vy; p.vx*=0.97; p.vy*=0.97;
-    }
+  function exitLoader(delay) {
+    setTimeout(function () {
+      loader.classList.add('done');
+      setTimeout(function () {
+        loader.style.display = 'none';
+        loader.style.visibility = 'hidden';
+      }, 600);
+      revealHero();
+    }, delay || 0);
   }
 
-  function getM() {
-    var bW=Math.min(W*0.4,220), bH=Math.min(H*0.52,290);
-    var gY=H*0.74, bX=(W-bW)/2, fl=5, fH=bH/fl;
-    return {bW:bW,bH:bH,bX:bX,bY:gY-bH,gY:gY,fl:fl,fH:fH};
-  }
+  // Phase labels driven by JS timers (CSS handles drawing)
+  var PHASES = [
+    'Laying Foundation…',
+    'Pouring Concrete Slab…',
+    'Raising Steel Frame…',
+    'Installing Glass Facade…',
+    'Final Finishing Touches…',
+    'Complete.'
+  ];
+  var label = document.getElementById('introPhaseLabel');
+  var bar   = document.getElementById('introProgressBar');
+  var logo  = document.getElementById('introFinalLogo');
+  var PHASE_MS = 380; // matches CSS --fi delay steps (0.38s per floor)
 
-  // 4 phases × 220ms = 880ms animation
-  var PHASES=6, PHASE_MS=650;
-  var phase=0, phaseP=0, lastT=null, raf, animDone=false;
-
-  var progressBar = document.querySelector('.intro-progress-bar');
-  var phaseLabel  = document.querySelector('.intro-phase-label');
-  var LABELS = ['Laying Foundation…','Pouring Concrete Slab…','Raising Steel Frame…','Installing Glass Facade…','Final Finishing Touches…','Complete.'];
-
-  function draw(ph, pp) {
-    if (!W || !H || W < 10 || H < 10) { resize(); if (!W || !H) return; }
-    ctx.clearRect(0,0,W,H);
-    var m=getM(), bW=m.bW,bH=m.bH,bX=m.bX,gY=m.gY,fl=m.fl,fH=m.fH;
-
-    // Sky gradient
-    var sky=ctx.createLinearGradient(0,0,0,H);
-    sky.addColorStop(0,'#0a0e1a'); sky.addColorStop(1,'#1a1408');
-    ctx.fillStyle=sky; ctx.fillRect(0,0,W,H);
-
-    // Stars (fade with phases)
-    var sa=Math.max(0, 0.5-ph*0.12);
-    for(var s=0;s<35;s++){
-      var sx=((s*137.5)%1)*W, sy=((s*93.7)%1)*gY*0.68;
-      ctx.beginPath(); ctx.arc(sx,sy,0.65,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,'+(sa*((s*61.3)%0.4+0.1))+')'; ctx.fill();
-    }
-
-    // Ground
-    ctx.fillStyle=ground; ctx.fillRect(0,gY,W,H-gY);
-    ctx.strokeStyle=steel; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(0,gY); ctx.lineTo(W,gY); ctx.stroke();
-
-    var fPad=bW*0.06, slabH=9;
-
-    // Phase 0: Excavation trench
-    var ex=ph===0?pp:1;
-    ctx.fillStyle='#0b0908'; ctx.fillRect(bX-fPad,gY,bW+fPad*2,26*Math.min(ex*1.8,1));
-    if(ph<1) return;
-
-    // Phase 1: Concrete foundation slab
-    var sf=ph===1?pp:1;
-    ctx.fillStyle=concrete; ctx.fillRect(bX-fPad,gY-slabH,(bW+fPad*2)*sf,slabH);
-    if(ph<2) return;
-
-    // Phase 2: Steel frame
-    var frameF=ph===2?Math.round(fl*pp):fl;
-    for(var f=0;f<frameF;f++){
-      var fp=ph===1?Math.max(0,Math.min(1,pp*fl-f)):1;
-      ctx.fillStyle=steel;
-      ctx.fillRect(bX, gY-slabH-fH*(f+1), 5, fH*fp);
-      ctx.fillRect(bX+bW-5, gY-slabH-fH*(f+1), 5, fH*fp);
-      if(fp>=0.85){ ctx.fillStyle=steelHi; ctx.fillRect(bX,gY-slabH-fH*(f+1),bW,4); }
-    }
-    // Bracing
-    ctx.strokeStyle='rgba(80,75,70,0.3)'; ctx.lineWidth=1.5; ctx.setLineDash([3,5]);
-    for(var f=0;f<Math.min(frameF,fl);f++){
-      var fy=gY-slabH-fH*f;
-      ctx.beginPath(); ctx.moveTo(bX+7,fy); ctx.lineTo(bX+bW/2,fy-fH); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(bX+bW-7,fy); ctx.lineTo(bX+bW/2,fy-fH); ctx.stroke();
-    }
-    ctx.setLineDash([]);
-    if(ph<3) return;
-
-    // Phase 3: Glass panels
-    var totalP=fl*4, drawnP=ph===3?Math.round(totalP*pp):totalP;
-    var panW=(bW-12)/4;
-    for(var i=0;i<drawnP&&i<totalP;i++){
-      var pf=Math.floor(i/4), pp2=i%4;
-      var px=bX+6+pp2*panW, py=gY-slabH-(pf+1)*fH+6, pw=panW-3, phh=fH-9;
-      var grd=ctx.createLinearGradient(px,py,px+pw,py+phh);
-      grd.addColorStop(0,'rgba(70,130,190,0.14)');
-      grd.addColorStop(0.5,'rgba(130,195,255,0.3)');
-      grd.addColorStop(1,'rgba(50,90,150,0.18)');
-      ctx.fillStyle=grd; ctx.fillRect(px,py,pw,phh);
-      ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fillRect(px,py,pw*0.13,phh);
-    }
-    ctx.strokeStyle=steelHi; ctx.lineWidth=1.5;
-    ctx.strokeRect(bX, gY-slabH-bH, bW, bH);
-    if(ph<4) return;
-
-    // Phase 4: Finishing
-    var fp4=ph===4?pp:1; var fp3=fp4;
-    ctx.fillStyle='rgba(232,93,4,'+(0.8*fp4)+")";
-    ctx.fillRect(bX, gY-slabH-bH*0.5, 5, bH*0.5*fp3);
-    ctx.fillRect(bX+bW-5, gY-slabH-bH*0.5, 5, bH*0.5*fp3);
-    ctx.fillStyle=concrete; ctx.fillRect(bX-4,gY-slabH-bH-7,(bW+8)*fp3,7);
-    // Warm glow
-    for(var f=0;f<fl;f++){
-      var fy=gY-slabH-(f+1)*fH+fH*0.2;
-      var grd2=ctx.createRadialGradient(bX+bW/2,fy+fH*0.4,0,bX+bW/2,fy+fH*0.4,Math.max(1,bW*0.45));
-      grd2.addColorStop(0,'rgba(232,93,4,'+(0.07*fp3)+')'); grd2.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=grd2; ctx.fillRect(bX-bW*0.12,fy,bW*1.24,fH);
-    }
-    var bg=ctx.createRadialGradient(W/2,gY,0,W/2,gY,Math.max(1,W*0.42));
-    bg.addColorStop(0,'rgba(232,93,4,'+(0.16*fp4)+')'); bg.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=bg; ctx.fillRect(0,gY-45,W,80);
-    if(ph<5) return;
-
-    // Phase 5: Full ambient glow
-    var fp5=pp;
-    var hGlow=ctx.createRadialGradient(W/2,gY-slabH-bH/2,0,W/2,gY-slabH-bH/2,Math.max(1,bW*0.95));
-    hGlow.addColorStop(0,'rgba(232,93,4,'+(0.14*fp5)+')'); hGlow.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=hGlow; ctx.fillRect(bX-bW*0.7,gY-slabH-bH-20,bW*2.4,bH+20);
-    // Shimmer on glass
-    for(var f=0;f<fl;f++){
-      var fy2=gY-slabH-(f+1)*fH+fH*0.15;
-      ctx.fillStyle='rgba(255,255,255,'+(0.03*fp5)+')';
-      ctx.fillRect(bX+6,fy2+4,(bW-14)*fp5,fH*0.6);
-    }
-  }
-
-  function drawCrane() {
-    var m=getM(), bW=m.bW,bH=m.bH,bX=m.bX,gY=m.gY;
-    var cx=bX+bW+16, mH=bH+44;
-    ctx.strokeStyle=craneDark; ctx.lineCap='round';
-    ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(cx,gY); ctx.lineTo(cx,gY-mH); ctx.stroke();
-    var jibL=bW*0.48+28;
-    ctx.lineWidth=4; ctx.beginPath();
-    ctx.moveTo(cx+jibL,gY-mH+9); ctx.lineTo(cx-bW*0.3,gY-mH+9); ctx.stroke();
-    var t=Date.now()/1000;
-    var tx=cx+jibL-(jibL*(Math.sin(t*0.55)*0.4+0.5)*0.6);
-    var hl=20+Math.abs(Math.sin(t*0.75))*16;
-    ctx.strokeStyle=craneYel; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(tx,gY-mH+9); ctx.lineTo(tx,gY-mH+9+hl); ctx.stroke();
-    ctx.fillStyle=craneYel;
-    ctx.fillRect(tx-4,gY-mH+9+hl,8,6);
-    ctx.fillRect(cx-9,gY-mH+11,18,13);
-  }
-
-  function animate(ts) {
-    if(animDone) return;
-    try {
-      if(!lastT) lastT=ts;
-      var dt=Math.min(ts-lastT,80); lastT=ts;
-      phaseP+=dt/PHASE_MS;
-      if(phaseP>=1){
-        phaseP=0; phase++;
-        if(phase>=1&&phase<=5){
-          var m=getM();
-          spawnDust(m.bX+m.bW/2, m.gY-m.fH*(phase<m.fl?phase:m.fl-1), 10);
-        }
-      }
-      var gP=Math.min((phase+phaseP)/PHASES,1);
-      if(progressBar) progressBar.style.width=(gP*100)+'%';
-      if(phaseLabel&&phase<LABELS.length) phaseLabel.textContent=LABELS[phase];
-      draw(phase, phaseP);
-      drawCrane();
-      tickDust();
-      if(phase<PHASES) { raf=requestAnimationFrame(animate); }
-      else { finish(); }
-    } catch(e) {
-      animDone=true;
-      clearTimeout(hardTimer);
-      exitLoader(0);
-    }
-  }
-  // Double-rAF: wait for first paint so dimensions are guaranteed
-  requestAnimationFrame(function() {
-    resize(); // re-measure after layout
-    raf = requestAnimationFrame(animate);
+  PHASES.forEach(function (text, i) {
+    setTimeout(function () {
+      if (label) label.textContent = text;
+      if (bar) bar.style.width = ((i + 1) / PHASES.length * 100) + '%';
+    }, 500 + i * PHASE_MS);
   });
 
-  function finish() {
-    if(animDone) return;
-    animDone=true;
-    clearTimeout(hardTimer);
-    cancelAnimationFrame(raf);
-    try { draw(5,1); drawCrane(); } catch(e){}
-    if(progressBar) progressBar.style.width='100%';
-    if(phaseLabel) phaseLabel.textContent='Complete.';
-    // Logo flash
-    var logo=document.querySelector('.intro-final-logo');
-    if(logo) setTimeout(function(){logo.classList.add('visible');},300);
-    // Curtain rip
-    setTimeout(function(){
-      var ct=document.getElementById('introCurtainTop');
-      var cb=document.getElementById('introCurtainBot');
-      if(ct) ct.classList.add('exit');
-      if(cb) cb.classList.add('exit');
-    }, 800);
-    // Exit
-    exitLoader(1100);
-  }
+  // Logo flash
+  var totalAnim = 500 + PHASES.length * PHASE_MS + 200; // ~2.8s
+  setTimeout(function () {
+    if (logo) logo.classList.add('visible');
+  }, totalAnim);
+
+  // Curtain rip
+  setTimeout(function () {
+    var ct = document.getElementById('introCurtainTop');
+    var cb = document.getElementById('introCurtainBot');
+    if (ct) ct.classList.add('exit');
+    if (cb) cb.classList.add('exit');
+  }, totalAnim + 400);
+
+  // Exit
+  exitLoader(totalAnim + 1300);
+
+  // Absolute hard limit — site always shows in 4s
+  setTimeout(function () { exitLoader(0); }, 4000);
 
   function revealHero() {
-    // Brand lines
-    var lines=document.querySelectorAll('.hbo-line');
-    lines.forEach(function(el,i){ setTimeout(function(){el.classList.add('revealed');},i*70); });
-    // Descriptor
-    setTimeout(function(){
-      var d=document.getElementById('heroDescriptor'); if(d) d.classList.add('revealed');
-    },280);
-    // HUD
-    setTimeout(function(){
-      var l=document.querySelector('.hero-hud-left'); if(l) l.classList.add('revealed');
-    },360);
-    setTimeout(function(){
-      var r=document.querySelector('.hero-hud-right'); if(r) r.classList.add('revealed');
-    },460);
-    // Counters
+    var lines = document.querySelectorAll('.hbo-line');
+    lines.forEach(function (el, i) {
+      setTimeout(function () { el.classList.add('revealed'); }, i * 70);
+    });
+    setTimeout(function () {
+      var d = document.getElementById('heroDescriptor');
+      if (d) d.classList.add('revealed');
+    }, 280);
+    setTimeout(function () {
+      var l = document.querySelector('.hero-hud-left');
+      if (l) l.classList.add('revealed');
+    }, 360);
+    setTimeout(function () {
+      var r = document.querySelector('.hero-hud-right');
+      if (r) r.classList.add('revealed');
+    }, 460);
     setTimeout(startCounters, 520);
-    // Nav
-    setTimeout(function(){
-      var h=document.getElementById('site-header');
-      if(h){ h.classList.add('visible'); h.classList.add('reveal'); }
-    },580);
+    setTimeout(function () {
+      var h = document.getElementById('site-header');
+      if (h) { h.classList.add('visible'); h.classList.add('reveal'); }
+    }, 580);
   }
 })();
 

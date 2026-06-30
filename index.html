@@ -84,20 +84,49 @@
 
   <!-- CINEMATIC INTRO: BUILDING CONSTRUCTION ANIMATION -->
   <div id="intro-loader" aria-hidden="true">
-    <canvas id="intro-canvas"></canvas>
-    <!-- Phase label at bottom -->
-    <div class="intro-phase-label">Laying Foundation…</div>
+    <!-- CSS building animation -->
+    <div class="intro-scene">
+      <!-- Stars -->
+      <div class="intro-stars">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <!-- Ground -->
+      <div class="intro-ground"></div>
+      <!-- Building floors -->
+      <div class="intro-building">
+        <div class="intro-floor" style="--fi:0"><div class="intro-windows"><span></span><span></span><span></span><span></span></div></div>
+        <div class="intro-floor" style="--fi:1"><div class="intro-windows"><span></span><span></span><span></span><span></span></div></div>
+        <div class="intro-floor" style="--fi:2"><div class="intro-windows"><span></span><span></span><span></span><span></span></div></div>
+        <div class="intro-floor" style="--fi:3"><div class="intro-windows"><span></span><span></span><span></span><span></span></div></div>
+        <div class="intro-floor" style="--fi:4"><div class="intro-windows"><span></span><span></span><span></span><span></span></div></div>
+        <!-- Roof bar -->
+        <div class="intro-roof"></div>
+      </div>
+      <!-- Crane -->
+      <div class="intro-crane">
+        <div class="intro-crane-mast"></div>
+        <div class="intro-crane-jib"></div>
+        <div class="intro-crane-cab"></div>
+        <div class="intro-crane-hook"></div>
+      </div>
+      <!-- Orange glow -->
+      <div class="intro-glow"></div>
+    </div>
+    <!-- Phase label -->
+    <div class="intro-phase-label" id="introPhaseLabel">Laying Foundation…</div>
     <!-- Progress bar -->
-    <div class="intro-progress-bar"></div>
-    <!-- Logo shown at very end before curtain rip -->
-    <div class="intro-final-logo">
-      <svg width="56" height="56" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="intro-progress-wrap"><div class="intro-progress-bar" id="introProgressBar"></div></div>
+    <!-- Logo reveal -->
+    <div class="intro-final-logo" id="introFinalLogo">
+      <svg width="48" height="48" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect width="80" height="80" rx="12" fill="#E85D04"/>
         <text x="12" y="56" font-family="sans-serif" font-weight="900" font-size="38" fill="white">SB</text>
       </svg>
       <div class="intro-final-logo-name">SB Construction</div>
     </div>
-    <!-- Curtains for dramatic reveal -->
+    <!-- Curtains -->
     <div class="intro-curtain-top" id="introCurtainTop"></div>
     <div class="intro-curtain-bot" id="introCurtainBot"></div>
   </div>
