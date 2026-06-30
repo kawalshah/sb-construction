@@ -828,14 +828,25 @@ p,li{text-wrap:pretty;max-width:68ch;}
   border-top: 2px solid #7a7268;
   position: relative;
   transform-origin: bottom center;
-  transform: scaleY(0);
+  -webkit-transform-origin: bottom center;
+  will-change: transform;
+  -webkit-animation: intro-floor-rise 0.55s cubic-bezier(0.22,1,0.36,1) both;
+          animation: intro-floor-rise 0.55s cubic-bezier(0.22,1,0.36,1) both;
+  -webkit-animation-delay: calc(0.3s + var(--fi) * 0.6s);
+          animation-delay: calc(0.3s + var(--fi) * 0.6s);
+  /* Safari: explicit start state so backwards-fill works */
+  -webkit-transform: scaleY(0);
+          transform: scaleY(0);
   opacity: 0;
-  animation: intro-floor-rise 0.55s cubic-bezier(0.22,1,0.36,1) both;
-  animation-delay: calc(0.3s + var(--fi) * 0.6s);
+}
+@-webkit-keyframes intro-floor-rise {
+  0%  { -webkit-transform: scaleY(0); transform: scaleY(0); opacity: 1; }
+  65% { -webkit-transform: scaleY(1.05); transform: scaleY(1.05); opacity: 1; }
+  100%{ -webkit-transform: scaleY(1); transform: scaleY(1); opacity: 1; }
 }
 @keyframes intro-floor-rise {
   0%  { transform: scaleY(0); opacity: 1; }
-  65% { transform: scaleY(1.05); }
+  65% { transform: scaleY(1.05); opacity: 1; }
   100%{ transform: scaleY(1); opacity: 1; }
 }
 
@@ -852,8 +863,14 @@ p,li{text-wrap:pretty;max-width:68ch;}
   border: 1px solid rgba(130,195,255,0.2);
   border-radius: 1px;
   opacity: 0;
-  animation: intro-win-in 0.3s ease both;
-  animation-delay: calc(0.55s + var(--fi) * 0.6s);
+  -webkit-animation: intro-win-in 0.3s ease both;
+          animation: intro-win-in 0.3s ease both;
+  -webkit-animation-delay: calc(0.55s + var(--fi) * 0.6s);
+          animation-delay: calc(0.55s + var(--fi) * 0.6s);
+}
+@-webkit-keyframes intro-win-in {
+  from { opacity: 0; background: rgba(255,210,120,0.6); }
+  to   { opacity: 1; background: rgba(70,130,190,0.18); }
 }
 @keyframes intro-win-in {
   from { opacity: 0; background: rgba(255,210,120,0.6); }
@@ -886,8 +903,10 @@ p,li{text-wrap:pretty;max-width:68ch;}
   background: #6a6258;
   border-radius: 3px 3px 0 0;
   transform-origin: bottom;
-  animation: intro-mast-grow 0.7s 0.4s cubic-bezier(0.22,1,0.36,1) both;
+  -webkit-animation: intro-mast-grow 0.7s 0.4s cubic-bezier(0.22,1,0.36,1) both;
+          animation: intro-mast-grow 0.7s 0.4s cubic-bezier(0.22,1,0.36,1) both;
 }
+@-webkit-keyframes intro-mast-grow { to { height: clamp(130px, 32vw, 210px); } }
 @keyframes intro-mast-grow { to { height: clamp(130px, 32vw, 210px); } }
 
 .intro-crane-jib {

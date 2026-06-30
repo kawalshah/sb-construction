@@ -44,6 +44,18 @@
     'Final Finishing Touches…',
     'Complete.'
   ];
+  // Safari fix: force reflow after first paint to kick-start CSS animations
+  // Safari sometimes defers animations on elements that are in the DOM at parse time
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      var scene = document.querySelector('.intro-scene');
+      if (scene) {
+        // Trigger reflow — read offsetHeight forces Safari to re-evaluate animations
+        void scene.offsetHeight;
+      }
+    });
+  });
+
   var labelEl = document.getElementById('introPhaseLabel');
   var barEl   = document.getElementById('introProgressBar');
   var logoEl  = document.getElementById('introFinalLogo');
@@ -71,9 +83,10 @@
   // Remove loader — fires after curtain animation (~0.85s transition)
   setTimeout(killLoader, 4900);
 
-  // HARD LIMIT — loader gone by 3s no matter what
-  // (fires if anything above breaks)
-  setTimeout(killLoader, 3000);
+  // HARD LIMIT — loader gone by 4.5s no matter what
+  // Animation ends at ~3.25s, curtain at 4s, this fires at 4.5s.
+  // If something breaks, user waits max 4.5s not forever.
+  setTimeout(killLoader, 4500);
 
   function revealHero() {
     var lines = document.querySelectorAll('.hbo-line');
