@@ -1,94 +1,15 @@
-// SB CONSTRUCTION – v5.2
+// SB CONSTRUCTION – v6.0
 
 /* ══════════════════════════════════════════════════════════════
-   INTRO — CSS BUILDING ANIMATION (Safari-safe, no canvas)
-   Timeline:
-     0ms   — loader visible, CSS animation starts immediately
-     300ms — floor 0 rises
-     900ms — floor 1 rises
-     1500ms — floor 2 rises
-     2100ms — floor 3 rises
-     2700ms — floor 4 rises
-     3300ms — roof appears
-     3600ms — logo fades in
-     4000ms — curtain rips open
-     4900ms — loader removed from DOM
+   INSTANT HERO REVEAL — no loader, no animation
 ══════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
 
-  var loader = document.getElementById('intro-loader');
-
-  // Reveal hero image behind the loader immediately
-  var heroMedia = document.querySelector('.hero-media');
-  if (heroMedia) heroMedia.classList.add('reveal');
-
-  // If no loader element, just reveal and exit
-  if (!loader) { revealHero(); return; }
-
-  // Single exit — removes loader completely, no CSS transition dependency
-  var done = false;
-  function killLoader() {
-    if (done) return;
-    done = true;
-    loader.style.cssText = 'display:none!important;visibility:hidden!important;pointer-events:none!important;z-index:-1!important;';
-    revealHero();
-  }
-
-  // Labels & progress — purely cosmetic, never block exit
-  var LABELS = [
-    'Laying Foundation…',
-    'Pouring Concrete Slab…',
-    'Raising Steel Frame…',
-    'Installing Glass Facade…',
-    'Final Finishing Touches…',
-    'Complete.'
-  ];
-  // Safari fix: force reflow after first paint to kick-start CSS animations
-  // Safari sometimes defers animations on elements that are in the DOM at parse time
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() {
-      var scene = document.querySelector('.intro-scene');
-      if (scene) {
-        // Trigger reflow — read offsetHeight forces Safari to re-evaluate animations
-        void scene.offsetHeight;
-      }
-    });
-  });
-
-  var labelEl = document.getElementById('introPhaseLabel');
-  var barEl   = document.getElementById('introProgressBar');
-  var logoEl  = document.getElementById('introFinalLogo');
-
-  LABELS.forEach(function (text, i) {
-    setTimeout(function () {
-      if (labelEl) labelEl.textContent = text;
-      if (barEl)   barEl.style.width   = Math.round((i + 1) / LABELS.length * 100) + '%';
-    }, 300 + i * 600);
-  });
-
-  // Logo flash
-  setTimeout(function () {
-    if (logoEl) logoEl.classList.add('visible');
-  }, 3600);
-
-  // Curtain rip
-  setTimeout(function () {
-    var ct = document.getElementById('introCurtainTop');
-    var cb = document.getElementById('introCurtainBot');
-    if (ct) ct.classList.add('exit');
-    if (cb) cb.classList.add('exit');
-  }, 4000);
-
-  // Remove loader — fires after curtain animation (~0.85s transition)
-  setTimeout(killLoader, 4900);
-
-  // HARD LIMIT — loader gone by 4.5s no matter what
-  // Animation ends at ~3.25s, curtain at 4s, this fires at 4.5s.
-  // If something breaks, user waits max 4.5s not forever.
-  setTimeout(killLoader, 4500);
-
   function revealHero() {
+    var heroMedia = document.querySelector('.hero-media');
+    if (heroMedia) heroMedia.classList.add('reveal');
+
     var lines = document.querySelectorAll('.hbo-line');
     lines.forEach(function (el, i) {
       setTimeout(function () { el.classList.add('revealed'); }, i * 70);
@@ -110,6 +31,13 @@
       var h = document.getElementById('site-header');
       if (h) { h.classList.add('visible'); h.classList.add('reveal'); }
     }, 560);
+  }
+
+  // Reveal immediately on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', revealHero);
+  } else {
+    revealHero();
   }
 })();
 
