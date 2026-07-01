@@ -186,9 +186,14 @@ function startCounters(){
   var wrap=document.getElementById('galleryWrap');
   if(!wrap)return;
   var drag=false,sx=0,ss=0;
+  // Mouse
   wrap.addEventListener('mousedown',function(e){drag=true;sx=e.clientX;ss=wrap.scrollLeft;wrap.style.cursor='grabbing';});
   window.addEventListener('mousemove',function(e){if(drag)wrap.scrollLeft=ss-(e.clientX-sx);});
   window.addEventListener('mouseup',function(){drag=false;wrap.style.cursor='';});
+  // Touch
+  wrap.addEventListener('touchstart',function(e){drag=true;sx=e.touches[0].clientX;ss=wrap.scrollLeft;},{passive:true});
+  window.addEventListener('touchmove',function(e){if(drag)wrap.scrollLeft=ss-(e.touches[0].clientX-sx);},{passive:true});
+  window.addEventListener('touchend',function(){drag=false;});
 })();
 
 /* ══════════════════════════════════════════════════
