@@ -1,4 +1,7 @@
-// SB CONSTRUCTION – v6.0
+// SB CONSTRUCTION – v6.1
+// Force scroll to top on every page load
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo(0, 0);
 
 /* ══════════════════════════════════════════════════════════════
    INSTANT HERO REVEAL — no loader, no animation
