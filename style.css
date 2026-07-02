@@ -403,6 +403,74 @@ p,li{text-wrap:pretty;max-width:68ch;}
   .service-card.photo-card .card-photo { height: 160px; }
 }
 
+/* ======================== VIDEO SHOWCASE ======================== */
+.video-showcase {
+  padding: clamp(var(--space-16), 8vw, var(--space-24)) 0;
+  background: var(--color-dark);
+  overflow: hidden;
+}
+.video-showcase .section-title { color: #fff; }
+.video-showcase .section-title em { color: var(--color-primary); font-style: normal; }
+.video-showcase .section-eyebrow { color: rgba(255,255,255,0.45); }
+.video-showcase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: clamp(32px, 5vw, 56px);
+}
+.video-showcase-item {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16/10;
+  background: #111;
+  --ri: 0;
+  transition-delay: calc(var(--ri) * 0.12s);
+}
+.showcase-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.video-showcase-item:hover .showcase-video {
+  transform: scale(1.04);
+}
+.video-showcase-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 28px 24px 22px;
+  background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%);
+  color: #fff;
+  pointer-events: none;
+}
+.video-tag {
+  display: inline-block;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+.video-showcase-label p {
+  font-family: 'Satoshi', sans-serif;
+  font-size: clamp(13px, 1.6vw, 16px);
+  color: rgba(255,255,255,0.8);
+  margin: 0;
+  line-height: 1.4;
+}
+@media (max-width: 640px) {
+  .video-showcase-grid {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+  .video-showcase-item { aspect-ratio: 4/3; }
+}
+
 /* ======================== BEFORE / AFTER ======================== */
 .before-after-section { padding:clamp(var(--space-16),8vw,var(--space-24)) 0; background:var(--color-surface); }
 .ba-slider {
